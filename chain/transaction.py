@@ -106,7 +106,7 @@ if __name__ == "__main__":
     trans.sign_transaction(key)
     print(str(trans))
     print(trans.to_string_without_sign())
-    trans2 = Transaction(str(trans))
+    trans2 = Transaction(trans=str(trans))
     print(trans2 == trans)
     print(trans2.verify_transaction(key))
     print(str(trans2) == str(trans))

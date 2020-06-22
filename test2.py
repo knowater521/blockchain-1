@@ -1,5 +1,6 @@
-from chain import Transaction
+from chain import Transaction, Block
 from key import UserKey
+
 
 if __name__ == "__main__":
     trans = Transaction()
@@ -7,9 +8,15 @@ if __name__ == "__main__":
     trans.add_output(5.67, "fsfwetewtette4654654")
     key = UserKey()
     trans.sign_transaction(key)
-    print(str(trans))
-    print(trans.to_string_without_sign())
     trans2 = Transaction(str(trans))
-    print(trans2 == trans)
-    print(trans2.verify_transaction(key))
-    print(str(trans2) == str(trans))
+    trans2.add_input(5, 6, 2)
+    block = Block()
+    block.add_transaction(trans)
+    block.add_transaction(trans2)
+    tap = str(block)
+    print(tap)
+    block2 = Block(block=tap)
+    print(str(block2))
+    print(str(block2) == str(block))
+    block.find_randnum()
+    print(block.get_hash())
