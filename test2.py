@@ -1,4 +1,4 @@
-from chain.transaction import Transaction
+from chain import Transaction
 from key import UserKey
 
 if __name__ == "__main__":
@@ -7,9 +7,9 @@ if __name__ == "__main__":
     trans.add_output(5.67, "fsfwetewtette4654654")
     key = UserKey()
     trans.sign_transaction(key)
-    print(trans.to_string())
+    print(str(trans))
     print(trans.to_string_without_sign())
-    trans2 = Transaction(trans.to_string())
+    trans2 = Transaction(str(trans))
     print(trans2 == trans)
     print(trans2.verify_transaction(key))
-    print(trans2.to_string() == trans.to_string())
+    print(str(trans2) == str(trans))

@@ -76,7 +76,12 @@ class Transaction:
         return user_key.verify(info, self.signed, user_key.get_pub_hex())
 
     def keys(self) -> List[str]:
-        return ["inputs", "outputs", "pub_hex", "signed"]
+        return [
+            "inputs",
+            "outputs",
+            "pub_hex",
+            "signed"
+        ]
 
     def __getitem__(self, key: str) -> Any:
         return getattr(self, key)
@@ -88,7 +93,7 @@ class Transaction:
         trans_dict["signed"] = ""
         return json.dumps(trans_dict).replace(" ", "")
 
-    def to_string(self) -> str:
+    def __str__(self) -> str:
         """把本次交易转换成字符串"""
         return json.dumps(dict(self)).replace(" ", "")
 
@@ -99,9 +104,9 @@ if __name__ == "__main__":
     trans.add_output(5.67, "fsfwetewtette4654654")
     key = UserKey()
     trans.sign_transaction(key)
-    print(trans.to_string())
+    print(str(trans))
     print(trans.to_string_without_sign())
-    trans2 = Transaction(trans.to_string())
+    trans2 = Transaction(str(trans))
     print(trans2 == trans)
     print(trans2.verify_transaction(key))
-    print(trans2.to_string() == trans.to_string())
+    print(str(trans2) == str(trans))
