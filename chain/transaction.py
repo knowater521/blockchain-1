@@ -44,6 +44,14 @@ class Transaction:
         self.pub_hex = trans_dict.get("pub_hex", self.pub_hex)
         self.signed = trans_dict.get("signed", self.signed)
 
+    def get_input(self, input: int) -> dict:
+        """获取第input个输入"""
+        return self.inputs[input]
+
+    def get_inputs(self) -> List[dict]:
+        """获取全部输入"""
+        return self.inputs
+
     def add_input(self, block: int, trans: int, output: int) -> None:
         """向交易中添加输入"""
         input_dict = dict(
@@ -56,6 +64,10 @@ class Transaction:
     def get_output(self, output: int) -> dict:
         """获取第output个输出"""
         return self.outputs[output]
+
+    def get_outputs(self) -> List[dict]:
+        """获取全部输出"""
+        return self.outputs
 
     def add_output(self, btcs: float, address: str) -> None:
         """向交易中添加输出"""

@@ -45,6 +45,10 @@ class Block:
                 t = Transaction(trans=trans)
                 self.add_transaction(t)
 
+    def get_transactions(self) -> List[Transaction]:
+        """获取全部交易"""
+        return self.transactions
+
     def get_transaction(self, trans: int) -> Transaction:
         """获取第trans个交易"""
         return self.transactions[trans]
