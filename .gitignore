@@ -1,0 +1,6 @@
+# 项目文件
+.vscode/
+
+# 环境文件
+.mypy_cache/
+.venv/
