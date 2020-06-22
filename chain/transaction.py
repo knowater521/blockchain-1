@@ -53,6 +53,10 @@ class Transaction:
         )
         self.inputs.append(input_dict)
     
+    def get_output(self, output: int) -> dict:
+        """获取第output个输出"""
+        return self.outputs[output]
+
     def add_output(self, btcs: float, address: str) -> None:
         """向交易中添加输出"""
         output_dict = dict(

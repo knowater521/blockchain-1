@@ -32,7 +32,7 @@ class Block:
             self.load_block(block)
     
     def load_block(self, block: str) -> None:
-        """根据字符串导入区块"""
+        """根据json数据导入区块"""
         block_dict = json.loads(block)
         self.index = block_dict.get("index", self.index)        
         self.pre_hash = block_dict.get("pre_hash", self.pre_hash)
@@ -44,6 +44,10 @@ class Block:
             for trans in trans_list:
                 t = Transaction(trans=trans)
                 self.add_transaction(t)
+
+    def get_transaction(self, trans: int) -> Transaction:
+        """获取第trans个交易"""
+        return self.transactions[trans]
 
     def add_transaction(self, trans: Transaction) -> None:
         """添加交易"""
