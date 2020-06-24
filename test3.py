@@ -1,6 +1,6 @@
 from key import UserKey
 from chain import TransOutput, TransInput, Transaction, Block, BlockChain
-from verify import TransVerify
+from verify import TransVerify, BlockVerify
 
 if __name__ == "__main__":
     bc = BlockChain.get_instance()
@@ -24,4 +24,7 @@ if __name__ == "__main__":
     b2 = Block(pre_hash=b1.get_hash())
     b2.add_transaction(t2)
     b2.find_randnum()
+    for verify in BlockVerify:
+        if not verify(b2).is_ok():
+            print("区块有问题")
     bc.add_block(b2)

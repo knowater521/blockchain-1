@@ -12,8 +12,8 @@ dict类型：
 }
 """
 import json
+import time
 from hashlib import sha256
-from time import time
 from typing import Any, List
 
 from config import HEAD_HASH, MINING_ADD_NUM
@@ -27,7 +27,7 @@ class Block:
         """初始化"""
         self.index = index          # 索引
         self.pre_hash = pre_hash    # 前一个区块的hash
-        self.timestap = time()      # 时间戳
+        self.timestap = time.time()      # 时间戳
         self.randnum = 0.0          # 随机数
         self.transactions: List[Transaction] = []      # 交易
         if block:
@@ -63,6 +63,10 @@ class Block:
         """获取第trans笔交易、outp个输出"""
         return self.get_transaction(trans).get_output(outp)
 
+    def get_timestap(self) -> time.struct_time:
+        """获取时间戳"""
+        return time.localtime(self.timestap)
+
     def add_transaction(self, trans: Transaction) -> None:
         """添加交易"""
         self.transactions.append(trans)
@@ -84,7 +88,7 @@ class Block:
         """寻找randnum，设定timestap"""
         while not self.veri_hash():
             self.randnum += MINING_ADD_NUM
-            self.timestap = time()
+            self.timestap = time.time()
 
     def keys(self) -> List[str]:
         return [

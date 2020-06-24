@@ -1,6 +1,4 @@
 """验证交易合法性"""
-import abc
-
 from chain import Transaction, BlockChain
 from .base import BaseTransVerify
 
