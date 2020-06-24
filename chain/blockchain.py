@@ -10,11 +10,20 @@ from .block import Block
 
 class BlockChain:
     """管理区块链的数据结构"""
+    _instance = None
+
     def __init__(self) -> None:
         self.blocks: List[Block] = []       # 所有区块
         self.utxos: Set[str] = set()        # 所有未消费输出 "0-2-6"第0个区块，第2笔交易的第6个输出
         self.height = 0                     # 区块链高度
         self.hash = ""                      # 账本的hash值
+
+    @classmethod
+    def get_instance(cls) -> "BlockChain":
+        """单例模式设计"""
+        if cls._instance is None:
+            cls._instance = BlockChain()
+        return cls._instance
 
     def get_height(self) -> int:
         """获取区块链的高度"""
@@ -49,6 +58,10 @@ class BlockChain:
         """定位到第block个区块、trans笔交易、outp个输出"""
         return self.get_block(block).get_output(trans, outp)
     
+    def input_to_output(self, inp: TransInput) -> TransOutput:
+        """根据输入找到输出"""
+        return self.get_output(inp.block, inp.trans, inp.output)
+
     def get_input(self, block: int, trans: int, inp: int) -> TransInput:
         """定位到第block个区块、trans笔交易、inp个输出"""
         return self.get_block(block).get_input(trans, inp)

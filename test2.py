@@ -20,6 +20,7 @@ if __name__ == "__main__":
     trans.add_output(TransOutput(5.67, "fsfwetewtette4654654"))
     key = UserKey()
     trans.sign_transaction(key)
+    print(len(trans.get_signed()))
     trans2 = Transaction(str(trans))
     trans2.add_input(TransInput(5, 6, 2))
     block = Block()

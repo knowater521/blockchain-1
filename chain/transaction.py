@@ -55,6 +55,12 @@ class Transaction:
         self.pub_hex = trans_dict.get("pub_hex", self.pub_hex)
         self.signed = trans_dict.get("signed", self.signed)
 
+    def get_pub_key(self) -> UserKey:
+        return UserKey(pub_hex=self.pub_hex)
+    
+    def get_signed(self) -> str:
+        return self.signed
+
     def get_input(self, input: int) -> TransInput:
         """获取第input个输入"""
         return self.inputs[input - 1]

@@ -1,3 +1,4 @@
+"""交易输入的数据结构"""
 from typing import List
 
 
