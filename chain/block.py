@@ -17,6 +17,8 @@ from time import time
 from typing import Any, List
 
 from config import HEAD_HASH, MINING_ADD_NUM
+from .trans_input import TransInput
+from .trans_output import TransOutput
 from .transaction import Transaction
 
 class Block:
@@ -27,7 +29,7 @@ class Block:
         self.pre_hash = pre_hash    # 前一个区块的hash
         self.timestap = time()      # 时间戳
         self.randnum = 0.0          # 随机数
-        self.transactions = []      # 交易
+        self.transactions: List[Transaction] = []      # 交易
         if block:
             self.load_block(block)
     
@@ -38,7 +40,7 @@ class Block:
         self.pre_hash = block_dict.get("pre_hash", self.pre_hash)
         self.timestap = block_dict.get("timestap", self.timestap)
         self.randnum = block_dict.get("randnum", self.randnum)
-        trans_list = block_dict.get("transactions", self.transactions)    
+        trans_list = block_dict.get("transactions", [])    
         if trans_list:
             self.transactions = []
             for trans in trans_list:
@@ -52,6 +54,14 @@ class Block:
     def get_transaction(self, trans: int) -> Transaction:
         """获取第trans个交易"""
         return self.transactions[trans]
+
+    def get_input(self, trans: int, inp: int) -> TransInput:
+        """获取第trans笔交易、inp个输入"""
+        return self.get_transaction(trans).get_input(inp)
+    
+    def get_output(self, trans: int, outp: int) -> TransOutput:
+        """获取第trans笔交易、outp个输出"""
+        return self.get_transaction(trans).get_output(outp)
 
     def add_transaction(self, trans: Transaction) -> None:
         """添加交易"""
@@ -92,14 +102,16 @@ class Block:
 
 
 if __name__ == "__main__":
+    from .trans_input import TransInput
+    from .trans_output import TransOutput
     trans = Transaction()
-    trans.add_input(3, 5, 7)
-    trans.add_output(5.67, "fsfwetewtette4654654")
+    trans.add_input(TransInput(3, 5, 7))
+    trans.add_output(TransOutput(5.67, "fsfwetewtette4654654"))
     from key import UserKey
     key = UserKey()
     trans.sign_transaction(key)
     trans2 = Transaction(str(trans))
-    trans2.add_input(5, 6, 2)
+    trans2.add_input(TransInput(5, 6, 2))
     block = Block()
     block.add_transaction(trans)
     block.add_transaction(trans2)

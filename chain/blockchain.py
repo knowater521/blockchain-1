@@ -1,6 +1,8 @@
 """区块链的数据结构"""
-from typing import Tuple
+from typing import Tuple, List, Set
 
+from .trans_output import TransOutput
+from .trans_input import TransInput
 from .transaction import Transaction
 from .block import Block
 
@@ -8,13 +10,24 @@ from .block import Block
 class BlockChain:
     """管理区块链的数据结构"""
     def __init__(self) -> None:
-        self.blocks = []            # 所有区块
-        self.utxos = set()          # 所有未消费输出 "0-2-6"第0个区块，第2笔交易的第6个输出
+        self.blocks: List[Block] = []            # 所有区块
+        self.utxos: Set[str] = set()          # 所有未消费输出 "0-2-6"第0个区块，第2笔交易的第6个输出
     
-    def get_output(self, block: int, trans: int, output: int) -> Tuple[float, str]:
-        """定位到第block个区块、trans笔交易、output个输出，返回值和地址"""
-        tap = self.blocks[block].get_transaction(trans).get_output(output)
-        return tap.get("btcs"), tap.get("address")
+    def get_block(self, block: int) -> Block:
+        """获取第block个区块"""
+        return self.blocks[block]
+
+    def get_transaction(self, block: int, trans: int) -> Transaction:
+        """获取第block个区块、第trans笔交易"""
+        return self.get_block(block).get_transaction(trans)
+
+    def get_output(self, block: int, trans: int, outp: int) -> TransOutput:
+        """定位到第block个区块、trans笔交易、outp个输出"""
+        return self.get_block(block).get_output(trans, outp)
+    
+    def get_input(self, block: int, trans: int, inp: int) -> TransInput:
+        """定位到第block个区块、trans笔交易、inp个输出"""
+        return self.get_block(block).get_input(trans, inp)
 
     def add_block(self, block: Block) -> None:
         """添加区块，并把区块中交易信息同步到utxo集中"""

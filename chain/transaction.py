@@ -24,13 +24,16 @@ from typing import List, Any
 import json
 
 from key import UserKey
+from .trans_input import TransInput
+from .trans_output import TransOutput
+
 
 class Transaction:
     """管理单个交易的类"""
     def __init__(self, trans: str="") -> None:
         """初始化"""
-        self.inputs = []         # 交易的输入
-        self.outputs = []        # 交易的输出
+        self.inputs: List[TransInput] = []         # 交易的输入
+        self.outputs: List[TransOutput] = []        # 交易的输出
         self.pub_hex = ""       # 验证交易用的公钥
         self.signed = ""         # 签名
         if trans:
@@ -39,43 +42,42 @@ class Transaction:
     def load_trans(self, trans: str) -> None:
         """根据json数据初始化trans"""
         trans_dict = json.loads(trans)
-        self.inputs = trans_dict.get("inputs", self.inputs)
-        self.outputs = trans_dict.get("outputs", self.outputs)
+        input_list = trans_dict.get("inputs", [])
+        if input_list:
+            self.inputs = []
+            for trans_input in input_list:
+                self.inputs.append(TransInput(trans_input=trans_input))
+        output_list = trans_dict.get("outputs", [])
+        if output_list:
+            self.outputs = []
+            for trans_output in output_list:
+                self.outputs.append(TransOutput(trans_output=trans_output))
         self.pub_hex = trans_dict.get("pub_hex", self.pub_hex)
         self.signed = trans_dict.get("signed", self.signed)
 
-    def get_input(self, input: int) -> dict:
+    def get_input(self, input: int) -> TransInput:
         """获取第input个输入"""
         return self.inputs[input]
 
-    def get_inputs(self) -> List[dict]:
+    def get_inputs(self) -> List[TransInput]:
         """获取全部输入"""
         return self.inputs
 
-    def add_input(self, block: int, trans: int, output: int) -> None:
+    def add_input(self, trans_input: TransInput) -> None:
         """向交易中添加输入"""
-        input_dict = dict(
-            block = block,
-            trans = trans,
-            output = output
-        )
-        self.inputs.append(input_dict)
+        self.inputs.append(trans_input)
     
-    def get_output(self, output: int) -> dict:
+    def get_output(self, output: int) -> TransOutput:
         """获取第output个输出"""
         return self.outputs[output]
 
-    def get_outputs(self) -> List[dict]:
+    def get_outputs(self) -> List[TransOutput]:
         """获取全部输出"""
         return self.outputs
 
-    def add_output(self, btcs: float, address: str) -> None:
+    def add_output(self, trans_output: TransOutput) -> None:
         """向交易中添加输出"""
-        output_dict = dict(
-            btcs = btcs,
-            address = address
-        )
-        self.outputs.append(output_dict)
+        self.outputs.append(trans_output)
 
     def sign_transaction(self, user_key: UserKey) -> None:
         """对交易进行签名"""
@@ -100,7 +102,10 @@ class Transaction:
         ]
 
     def __getitem__(self, key: str) -> Any:
-        return getattr(self, key)
+        value = getattr(self, key)
+        if key == "inputs" or key == "outputs":
+            value = [str(tap) for tap in value]
+        return value
 
     def to_string_without_sign(self) -> str:
         """导出字符串（未签名前）"""
@@ -116,8 +121,8 @@ class Transaction:
 
 if __name__ == "__main__":
     trans = Transaction()
-    trans.add_input(3, 5, 7)
-    trans.add_output(5.67, "fsfwetewtette4654654")
+    trans.add_input(TransInput(3, 5, 7))
+    trans.add_output(TransOutput(5.67, "fsfwetewtette4654654"))
     key = UserKey()
     trans.sign_transaction(key)
     print(str(trans))
