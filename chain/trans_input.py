@@ -1,4 +1,3 @@
-import json
 from typing import List
 
 
@@ -13,10 +12,10 @@ class TransInput:
             self.load_input(trans_input)
     
     def load_input(self, trans_input: str) -> None:
-        input_dict = json.loads(trans_input)
-        self.block = input_dict.get("block", self.block)
-        self.trans = input_dict.get("trans", self.trans)
-        self.output = input_dict.get("output", self.output)
+        tap = trans_input.split("-")
+        self.block = int(tap[0])
+        self.trans = int(tap[1])
+        self.output = int(tap[2])
 
     def keys(self) -> List[str]:
         return [
@@ -29,4 +28,5 @@ class TransInput:
         return getattr(self, key)
     
     def __str__(self) -> str:
-        return json.dumps(dict(self)).replace(" ", "")
+        """block-trans-output"""
+        return f"{self.block}-{self.trans}-{self.output}"

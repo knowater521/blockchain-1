@@ -1,4 +1,5 @@
 """区块链的数据结构"""
+from hashlib import sha256
 from typing import Tuple, List, Set
 
 from .trans_output import TransOutput
@@ -10,12 +11,35 @@ from .block import Block
 class BlockChain:
     """管理区块链的数据结构"""
     def __init__(self) -> None:
-        self.blocks: List[Block] = []            # 所有区块
-        self.utxos: Set[str] = set()          # 所有未消费输出 "0-2-6"第0个区块，第2笔交易的第6个输出
-    
+        self.blocks: List[Block] = []       # 所有区块
+        self.utxos: Set[str] = set()        # 所有未消费输出 "0-2-6"第0个区块，第2笔交易的第6个输出
+        self.height = 0                     # 区块链高度
+        self.hash = ""                      # 账本的hash值
+
+    def get_height(self) -> int:
+        """获取区块链的高度"""
+        return self.height
+
+    def get_hash(self) -> str:
+        """获取区块链的hash值"""
+        if not self.hash:
+            self.compute_hash()
+        return self.hash
+
+    def compute_hash(self) -> None:
+        """计算区块链的hash值"""
+        tap = "".join([str(block) for block in self.get_blocks()])
+        tap += str(sorted(self.utxos))
+        tap += str(self.height)
+        self.hash = sha256(tap.encode("utf-8")).hexdigest()
+
     def get_block(self, block: int) -> Block:
         """获取第block个区块"""
-        return self.blocks[block]
+        return self.blocks[block - 1]
+
+    def get_blocks(self) -> List[Block]:
+        """获取所有区块"""
+        return self.blocks
 
     def get_transaction(self, block: int, trans: int) -> Transaction:
         """获取第block个区块、第trans笔交易"""
@@ -32,13 +56,14 @@ class BlockChain:
     def add_block(self, block: Block) -> None:
         """添加区块，并把区块中交易信息同步到utxo集中"""
         self.blocks.append(block)
-        # TODO
-        for trans in block.get_transactions():
-            for inp in trans.get_inputs():
-                pass
-            for oup in trans.get_outputs():
-                pass
-
+        self.height += 1
+        for i, trans in enumerate(block.get_transactions()):
+            for inp in trans.get_inputs():                  # 移除已使用utxo
+                self.utxos.remove(str(inp))
+            for j, oup in enumerate(trans.get_outputs()):   # 添加新产生的utxo
+                tap = f"{self.get_height()}-{i + 1}-{j + 1}"
+                self.utxos.add(tap)
+        self.compute_hash()
 
     def get_top_block(self) -> Block:
         """获取顶部区块"""
@@ -48,7 +73,7 @@ class BlockChain:
         """验证某个输出是否已被消费"""
         tap = f"{block}-{trans}-{output}"
         return tap in self.utxos
-    
+
 
 if __name__ == "__main__":
     from key import UserKey
@@ -56,16 +81,16 @@ if __name__ == "__main__":
     key1 = UserKey()
     key2 = UserKey()
     t1 = Transaction()
-    t1.add_output(50, key1.get_address())
-    t1.add_output(50, key2.get_address())
+    t1.add_output(TransOutput(50, key1.get_address()))
+    t1.add_output(TransOutput(50, key2.get_address()))
     b1 = Block()
     b1.add_transaction(t1)
     b1.find_randnum()
     bc.add_block(b1)
     # key1向key2转账
     t2 = Transaction()
-    t2.add_input(0, 0, 0)
-    t2.add_output(23.567, key2.get_address())
+    t2.add_input(TransInput(0, 0, 0))
+    t2.add_output(TransOutput(23.567, key2.get_address()))
     t2.sign_transaction(key1)
     b2 = Block()
     b2.add_transaction(t2)

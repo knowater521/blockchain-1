@@ -1,4 +1,3 @@
-import json
 from typing import List
 
 
@@ -12,9 +11,9 @@ class TransOutput:
             self.load_output(trans_output)
     
     def load_output(self, trans_output: str) -> None:
-        output_dict = json.loads(trans_output)
-        self.btcs = output_dict.get("btcs", self.btcs)
-        self.address = output_dict.get("address", self.address)
+        tap = trans_output.split("-")
+        self.btcs = float(tap[0])
+        self.address = tap[1]
 
     def keys(self) -> List[str]:
         return [
@@ -26,4 +25,5 @@ class TransOutput:
         return getattr(self, key)
     
     def __str__(self) -> str:
-        return json.dumps(dict(self)).replace(" ", "")
+        """btcs-address"""
+        return f"{self.btcs}-{self.address}"

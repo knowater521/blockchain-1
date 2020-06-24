@@ -53,7 +53,7 @@ class Block:
 
     def get_transaction(self, trans: int) -> Transaction:
         """获取第trans个交易"""
-        return self.transactions[trans]
+        return self.transactions[trans - 1]
 
     def get_input(self, trans: int, inp: int) -> TransInput:
         """获取第trans笔交易、inp个输入"""
@@ -66,6 +66,10 @@ class Block:
     def add_transaction(self, trans: Transaction) -> None:
         """添加交易"""
         self.transactions.append(trans)
+
+    def set_prehash(self, pre_hash: str) -> None:
+        """设置区块的pre_hash"""
+        self.pre_hash = pre_hash
 
     def get_hash(self) -> str:
         """获取本区块的hash值"""

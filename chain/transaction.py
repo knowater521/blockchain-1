@@ -4,7 +4,7 @@ dict类型：
 {
     "inputs": [                                 # 交易的输入描述
         {
-            "block": 0,                         # 第几个区块
+            "block": 1,                         # 第几个区块
             "trans": 4,                         # 第几个交易
             "output": 2                         # 第几个输出
         },
@@ -57,7 +57,7 @@ class Transaction:
 
     def get_input(self, input: int) -> TransInput:
         """获取第input个输入"""
-        return self.inputs[input]
+        return self.inputs[input - 1]
 
     def get_inputs(self) -> List[TransInput]:
         """获取全部输入"""
@@ -69,7 +69,7 @@ class Transaction:
     
     def get_output(self, output: int) -> TransOutput:
         """获取第output个输出"""
-        return self.outputs[output]
+        return self.outputs[output - 1]
 
     def get_outputs(self) -> List[TransOutput]:
         """获取全部输出"""
@@ -88,9 +88,11 @@ class Transaction:
         self.pub_hex = pub
         self.signed = user_key.sign(info)
 
-    def verify_transaction(self, user_key: UserKey) -> bool:
+    def verify_transaction(self, user_key: UserKey=None) -> bool:
         """用公钥验证交易"""
         info = self.to_string_without_sign()
+        if user_key is None:
+            user_key = UserKey(pub_hex=self.pub_hex)
         return user_key.verify(info, self.signed, user_key.get_pub_hex())
 
     def keys(self) -> List[str]:
@@ -108,10 +110,10 @@ class Transaction:
         return value
 
     def to_string_without_sign(self) -> str:
-        """导出字符串（未签名前）"""
+        """导出字符串（不包含签名消息）"""
         trans_dict = dict(self)
-        trans_dict["pub_hex"] = ""
-        trans_dict["signed"] = ""
+        del trans_dict["pub_hex"]
+        del trans_dict["signed"]
         return json.dumps(trans_dict).replace(" ", "")
 
     def __str__(self) -> str:
