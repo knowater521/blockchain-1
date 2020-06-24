@@ -1,7 +1,7 @@
 """verify的基类"""
 import abc
 
-from chain import Transaction, Block
+from chain import Transaction, Block, BlockChain
 
 
 class BaseVerify(metaclass=abc.ABCMeta):
@@ -19,3 +19,7 @@ class BaseBlockVerify(BaseVerify):
     def __init__(self, block: Block) -> None:
         self.block = block
 
+
+class BaseBlockChainVerify(BaseVerify):
+    def __init__(self, blc: BlockChain) -> None:
+        self.blc = blc
