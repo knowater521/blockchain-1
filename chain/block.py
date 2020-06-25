@@ -47,8 +47,9 @@ class Block:
         self.randnum = block_dict.get("randnum", self.randnum)
         trans_list = block_dict.get("transactions", [])    
         if trans_list:
-            self.transactions = []
-            for trans in trans_list:
+            self.clear_transactions()
+            self.set_head_transaction(Transaction(trans=trans_list[0]))
+            for trans in trans_list[1:]:
                 t = Transaction(trans=trans)
                 self.add_transaction(t)
 
@@ -59,6 +60,10 @@ class Block:
     def get_index(self) -> int:
         """获取index"""
         return self.index
+
+    def clear_transactions(self) -> None:
+        """清空交易"""
+        self.transactions = []
 
     def get_transactions(self) -> List[Transaction]:
         """获取全部交易"""
