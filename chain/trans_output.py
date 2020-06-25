@@ -1,5 +1,8 @@
 """交易输出的数据结构"""
+from decimal import Decimal
 from typing import List
+
+from .btc import Btc
 
 
 __all__ = ["TransOutput", ]
@@ -7,7 +10,7 @@ __all__ = ["TransOutput", ]
 
 class TransOutput:
     """交易输出"""
-    def __init__(self, btcs: float=0, address: str="", trans_output: str="") -> None:
+    def __init__(self, btcs: Decimal=Btc("0"), address: str="", trans_output: str="") -> None:
         """初始化"""
         self.btcs = btcs
         self.address = address
@@ -16,7 +19,7 @@ class TransOutput:
     
     def load_output(self, trans_output: str) -> None:
         tap = trans_output.split("-")
-        self.btcs = float(tap[0])
+        self.btcs = Btc((tap[0]))
         self.address = tap[1]
 
     def keys(self) -> List[str]:
@@ -30,4 +33,7 @@ class TransOutput:
     
     def __str__(self) -> str:
         """btcs-address"""
-        return f"{self.btcs}-{self.address}"
+        tap = str(self.btcs).strip("0")
+        if tap:
+            tap = "0"
+        return f"{tap}-{self.address}"

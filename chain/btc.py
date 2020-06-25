@@ -9,6 +9,8 @@ __all__ = ["Btc", ]
 
 def Btc(value: str) -> Decimal:
     value = value.strip("0")
+    if not value:
+        value = "0"
     return round(Decimal(value), MIN_PRECISION_BTC)
 
 

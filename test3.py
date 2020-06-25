@@ -1,7 +1,8 @@
 from key import UserKey
-from chain import TransOutput, TransInput, Transaction, Block, BlockChain
+from chain import Btc, TransOutput, TransInput, Transaction, Block, BlockChain
 from config import MINING_BTCS
 from verify import Verify
+
 
 if __name__ == "__main__":
     # 创建区块链
@@ -12,8 +13,8 @@ if __name__ == "__main__":
     key2 = UserKey()
     # 初始区块的创币交易（只有输出，没有输入）
     t1 = Transaction()
-    t1.add_output(TransOutput(5000, key1.get_address()))
-    t1.add_output(TransOutput(5000, key2.get_address()))
+    t1.add_output(TransOutput(Btc("5000"), key1.get_address()))
+    t1.add_output(TransOutput(Btc("5000"), key2.get_address()))
     # 创世区块
     b1 = Block()
     b1.add_transaction(t1)
@@ -29,7 +30,7 @@ if __name__ == "__main__":
     # key1向key2转账
     t2 = Transaction()
     t2.add_input(TransInput(1, 1, 1))
-    t2.add_output(TransOutput(23.567, key2.get_address()))
+    t2.add_output(TransOutput(Btc("23.567"), key2.get_address()))
     t2.sign_transaction(key1)
     if not Verify.verify_transaction(t2):
         print("交易有问题")

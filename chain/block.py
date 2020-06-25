@@ -153,10 +153,11 @@ class Block:
 if __name__ == "__main__":
     from .trans_input import TransInput
     from .trans_output import TransOutput
+    from .btc import Btc
+    from key import UserKey
     trans = Transaction()
     trans.add_input(TransInput(3, 5, 7))
-    trans.add_output(TransOutput(5.67, "fsfwetewtette4654654"))
-    from key import UserKey
+    trans.add_output(TransOutput(Btc("5.67"), "fsfwetewtette4654654"))
     key = UserKey()
     trans.sign_transaction(key)
     trans2 = Transaction(str(trans))

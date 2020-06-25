@@ -11,7 +11,7 @@ dict类型：
     ],
     "outputs": [                                # 交易的输出描述
         {
-            "btcs": 0.34,                       # 金额
+            "btcs": "0.34",                     # 金额，用字符串以解决计算机的误差问题
             "address": "fjwj34jr3kj5346j5464j",      # 指向的地址
         },
     ],
@@ -20,10 +20,12 @@ dict类型：
 }
 交易费=输入-输出
 """
-from typing import List, Any
 import json
+from typing import List, Any
+from decimal import Decimal
 
 from key import UserKey
+from .btc import Btc
 from .trans_input import TransInput
 from .trans_output import TransOutput
 
@@ -84,9 +86,9 @@ class Transaction:
         """获取全部输出"""
         return self.outputs
 
-    def compute_outputs_btcs(self) -> float:
+    def compute_outputs_btcs(self) -> Decimal:
         """计算一个交易中的输出总btc"""
-        fee = 0.0
+        fee = Btc("0")
         for outp in self.get_outputs():
             fee += outp.btcs
         return fee
@@ -140,7 +142,7 @@ class Transaction:
 if __name__ == "__main__":
     trans = Transaction()
     trans.add_input(TransInput(3, 5, 7))
-    trans.add_output(TransOutput(5.67, "fsfwetewtette4654654"))
+    trans.add_output(TransOutput(Btc("5.67"), "fsfwetewtette4654654"))
     key = UserKey()
     trans.sign_transaction(key)
     print(str(trans))

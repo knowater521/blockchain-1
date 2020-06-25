@@ -1,4 +1,4 @@
-from chain import Transaction, Block, BlockChain
+from chain import Btc, Transaction, Block, BlockChain
 from config import MINING_BTCS, REDUCE_BTCS_HEIGHT
 from .transaction import TransVerify
 from .block import BlockVerify

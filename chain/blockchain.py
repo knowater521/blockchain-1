@@ -1,8 +1,10 @@
 """区块链的数据结构"""
 import time
 from hashlib import sha256
+from decimal import Decimal
 from typing import Tuple, List, Set
 
+from .btc import Btc
 from .trans_output import TransOutput
 from .trans_input import TransInput
 from .transaction import Transaction
@@ -75,20 +77,20 @@ class BlockChain:
         """定位到第block个区块、trans笔交易、inp个输出"""
         return self.get_block(block).get_input(trans, inp)
 
-    def compute_block_fee(self, block: Block) -> float:
+    def compute_block_fee(self, block: Block) -> Decimal:
         """计算一个区块中的总交易费"""
-        fee = 0.0
+        fee = Btc("0")
         for trans in block.get_user_transactions():
             fee += self.compute_transaction_fee(trans)
         return fee
 
-    def compute_transaction_fee(self, trans: Transaction) -> float:
+    def compute_transaction_fee(self, trans: Transaction) -> Decimal:
         """计算一笔交易的交易费"""
-        inp_btcs = 0.0
+        inp_btcs = Btc("0")
         for inp in trans.get_inputs():
             outp = self.input_to_output(inp)
             inp_btcs += outp.btcs
-        outp_btcs = 0.0
+        outp_btcs = Btc("0")
         for outp in trans.get_outputs():
             outp_btcs += outp.btcs
         return inp_btcs - outp_btcs
@@ -122,8 +124,8 @@ if __name__ == "__main__":
     key1 = UserKey()
     key2 = UserKey()
     t1 = Transaction()
-    t1.add_output(TransOutput(50, key1.get_address()))
-    t1.add_output(TransOutput(50, key2.get_address()))
+    t1.add_output(TransOutput(Btc("50"), key1.get_address()))
+    t1.add_output(TransOutput(Btc("50"), key2.get_address()))
     b1 = Block()
     b1.add_transaction(t1)
     b1.find_randnum()
@@ -131,7 +133,7 @@ if __name__ == "__main__":
     # key1向key2转账
     t2 = Transaction()
     t2.add_input(TransInput(0, 0, 0))
-    t2.add_output(TransOutput(23.567, key2.get_address()))
+    t2.add_output(TransOutput(Btc("23.567"), key2.get_address()))
     t2.sign_transaction(key1)
     b2 = Block()
     b2.add_transaction(t2)
