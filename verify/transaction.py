@@ -1,9 +1,28 @@
-"""验证交易合法性"""
+"""验证用户交易合法性"""
+import re
+
 from chain import Transaction, BlockChain
 from .base import BaseTransVerify
 
 
 __all__ = ["TransVerify", ]
+
+
+class InpOutpTrans(BaseTransVerify):
+    """输入输出的验证"""
+    def __init__(self, trans: Transaction) -> None:
+        super().__init__(trans)
+    
+    def is_ok(self) -> bool:
+        # 输入的值应合法
+        for inp in self.trans.get_inputs():
+            if inp.block <= 0 or inp.trans <= 0 or inp.output <= 0:
+                return False
+        # 输出的值应合法
+        for outp in self.trans.get_outputs():
+            if outp.btcs <= 0 or not re.match(r"[0-9a-f]{64}", outp.address):
+                return False
+        return True
 
 
 class FormatTrans(BaseTransVerify):
@@ -38,7 +57,7 @@ class SignedTrans(BaseTransVerify):
         for inp in self.trans.get_inputs():
             blc = BlockChain.get_instance()
             outp = blc.input_to_output(inp)
-            if not address == outp.address:
+            if address != outp.address:
                 return False
         return True
 
@@ -49,16 +68,9 @@ class AmountTrans(BaseTransVerify):
         super().__init__(trans)
     
     def is_ok(self) -> bool:
-        # 输入btcs必须大于输出btcs
-        inp_btcs = 0.0
-        for inp in self.trans.get_inputs():
-            blc = BlockChain.get_instance()
-            outp = blc.input_to_output(inp)
-            inp_btcs += outp.btcs
-        outp_btcs = 0.0
-        for outp in self.trans.get_outputs():
-            outp_btcs += outp.btcs
-        return inp_btcs > outp_btcs
+        # 交易费必须大于0
+        blc = BlockChain.get_instance()
+        return blc.compute_transaction_fee(self.trans) > 0
 
 
-TransVerify = [FormatTrans, SignedTrans, AmountTrans]
+TransVerify = [InpOutpTrans, FormatTrans, SignedTrans, AmountTrans]

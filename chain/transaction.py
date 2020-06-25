@@ -28,6 +28,9 @@ from .trans_input import TransInput
 from .trans_output import TransOutput
 
 
+__all__ = ["Transaction", ]
+
+
 class Transaction:
     """管理单个交易的类"""
     def __init__(self, trans: str="") -> None:
@@ -80,6 +83,13 @@ class Transaction:
     def get_outputs(self) -> List[TransOutput]:
         """获取全部输出"""
         return self.outputs
+
+    def compute_outputs_btcs(self) -> float:
+        """计算一个交易中的输出总btc"""
+        fee = 0.0
+        for outp in self.get_outputs():
+            fee += outp.btcs
+        return fee
 
     def add_output(self, trans_output: TransOutput) -> None:
         """向交易中添加输出"""

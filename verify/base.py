@@ -4,6 +4,9 @@ import abc
 from chain import Transaction, Block, BlockChain
 
 
+__all__ = ["BaseTransVerify", "BaseBlockVerify", "BaseBlockChainVerify", ]
+
+
 class BaseVerify(metaclass=abc.ABCMeta):
     @abc.abstractmethod
     def is_ok(self) -> bool:

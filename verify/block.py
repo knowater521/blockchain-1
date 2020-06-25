@@ -1,6 +1,6 @@
 """验证区块的合法性"""
 from chain import Block
-from config import MAX_TRANSACTION_NUMBER
+from config import MAX_USER_TRANSACTION_NUMBER, MIN_USER_TRANSACTION_NUMBER
 from .base import BaseBlockVerify
 
 
@@ -13,9 +13,9 @@ class FormatBlock(BaseBlockVerify):
         super().__init__(block)
     
     def is_ok(self) -> bool:
-        # 单个区块的交易数量不能超过上限，也不能为空
-        tr_len = len(self.block.get_transactions())
-        if tr_len > MAX_TRANSACTION_NUMBER or tr_len == 0:
+        # 单个区块的用户交易数量不能超过上限，也不能小于下限
+        tr_len = len(self.block.get_user_transactions())
+        if tr_len > MAX_USER_TRANSACTION_NUMBER or tr_len < MIN_USER_TRANSACTION_NUMBER:
             return False
         return True
 

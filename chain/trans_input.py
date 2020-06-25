@@ -2,6 +2,9 @@
 from typing import List
 
 
+__all__ = ["TransInput", ]
+
+
 class TransInput:
     """交易输入"""
     def __init__(self, block: int=0, trans: int=0, output: int=0, trans_input: str="") -> None:

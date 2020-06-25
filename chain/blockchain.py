@@ -1,4 +1,5 @@
 """区块链的数据结构"""
+import time
 from hashlib import sha256
 from typing import Tuple, List, Set
 
@@ -8,22 +9,30 @@ from .transaction import Transaction
 from .block import Block
 
 
+__all__ = ["BlockChain", ]
+
+
 class BlockChain:
     """管理区块链的数据结构"""
-    _instance = None
+    __instance = None
 
     def __init__(self) -> None:
         self.blocks: List[Block] = []       # 所有区块
         self.utxos: Set[str] = set()        # 所有未消费输出 "0-2-6"第0个区块，第2笔交易的第6个输出
         self.height = 0                     # 区块链高度
         self.hash = ""                      # 账本的hash值
+        self.start_time = time.time()       # 区块链的创建时间
 
     @classmethod
     def get_instance(cls) -> "BlockChain":
         """单例模式设计"""
-        if cls._instance is None:
-            cls._instance = BlockChain()
-        return cls._instance
+        if cls.__instance is None:
+            cls.__instance = BlockChain()
+        return cls.__instance
+
+    def get_start_time(self) -> time.struct_time:
+        """获取区块链的创建时间"""
+        return time.localtime(self.start_time)
 
     def get_height(self) -> int:
         """获取区块链的高度"""
@@ -66,10 +75,29 @@ class BlockChain:
         """定位到第block个区块、trans笔交易、inp个输出"""
         return self.get_block(block).get_input(trans, inp)
 
+    def compute_block_fee(self, block: Block) -> float:
+        """计算一个区块中的总交易费"""
+        fee = 0.0
+        for trans in block.get_user_transactions():
+            fee += self.compute_transaction_fee(trans)
+        return fee
+
+    def compute_transaction_fee(self, trans: Transaction) -> float:
+        """计算一笔交易的交易费"""
+        inp_btcs = 0.0
+        for inp in trans.get_inputs():
+            outp = self.input_to_output(inp)
+            inp_btcs += outp.btcs
+        outp_btcs = 0.0
+        for outp in trans.get_outputs():
+            outp_btcs += outp.btcs
+        return inp_btcs - outp_btcs
+
     def add_block(self, block: Block) -> None:
         """添加区块，并把区块中交易信息同步到utxo集中"""
-        self.blocks.append(block)
         self.height += 1
+        block.set_index(self.height)
+        self.blocks.append(block)
         for i, trans in enumerate(block.get_transactions()):
             for inp in trans.get_inputs():                  # 移除已使用utxo
                 self.utxos.remove(str(inp))

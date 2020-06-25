@@ -4,13 +4,18 @@ from base64 import b64encode, b64decode
 from typing import Optional, Tuple
 
 
+__all__ = ["UserKey", ]
+
+
 class UserKey:
     """密钥类，用于管理公钥和私钥"""
     def __init__(self, pub_hex: str="", pri_hex: str="") -> None:
         """可以只创建pub_key或者只创建pri_key"""
         if pub_hex or pri_hex: # 创建key对象
-            self.pub_key = self.hex_to_key(pub_hex, "pub")
-            self.pri_key = self.hex_to_key(pri_hex, "pri")
+            if pub_hex:
+                self.pub_key = self.hex_to_key(pub_hex, "pub")
+            if pri_hex:
+                self.pri_key = self.hex_to_key(pri_hex, "pri")
         else:                   # 产生一个新key
             self.pub_key, self.pri_key = rsa.newkeys(512)
 

@@ -16,20 +16,25 @@ import time
 from hashlib import sha256
 from typing import Any, List
 
-from config import HEAD_HASH, MINING_ADD_NUM
+from config import HEAD_HASH, MINING_ADD_NUM, FIREST_BLOCK_PREHASH
 from .trans_input import TransInput
 from .trans_output import TransOutput
 from .transaction import Transaction
 
+
+__all__ = ["Block", ]
+
+
 class Block:
     """管理区块的类"""
-    def __init__(self, index: int=0, pre_hash: str="0"*64, block: str="") -> None:
+    def __init__(self, index: int=0, pre_hash: str=FIREST_BLOCK_PREHASH, block: str="") -> None:
         """初始化"""
         self.index = index          # 索引
         self.pre_hash = pre_hash    # 前一个区块的hash
-        self.timestap = time.time()      # 时间戳
+        self.timestap = time.time() # 时间戳
         self.randnum = 0.0          # 随机数
-        self.transactions: List[Transaction] = []      # 交易
+        self.transactions: List[Transaction] = []       # 交易
+        self.head_trans = Transaction()                 # 第一笔交易（矿工奖励和交易费）
         if block:
             self.load_block(block)
     
@@ -47,13 +52,32 @@ class Block:
                 t = Transaction(trans=trans)
                 self.add_transaction(t)
 
+    def set_index(self, index: int) -> None:
+        """设置索引"""
+        self.index = index
+
+    def get_index(self) -> int:
+        """获取index"""
+        return self.index
+
     def get_transactions(self) -> List[Transaction]:
         """获取全部交易"""
+        return [self.head_trans] + self.transactions
+
+    def get_user_transactions(self) -> List[Transaction]:
+        """获取用户的全部交易（不包括第一笔交易）"""
         return self.transactions
 
     def get_transaction(self, trans: int) -> Transaction:
         """获取第trans个交易"""
-        return self.transactions[trans - 1]
+        if trans == 1:
+            return self.head_trans
+        else:
+            return self.transactions[trans - 2]
+
+    def get_transactions_length(self) -> int:
+        """获取交易数量"""
+        return len(self.get_transactions())
 
     def get_input(self, trans: int, inp: int) -> TransInput:
         """获取第trans笔交易、inp个输入"""
@@ -70,6 +94,18 @@ class Block:
     def add_transaction(self, trans: Transaction) -> None:
         """添加交易"""
         self.transactions.append(trans)
+
+    def set_head_transaction(self, trans: Transaction) -> None:
+        """添加创块交易（包括交易费和矿工奖励）"""
+        self.head_trans = trans
+
+    def get_head_transaction(self) -> Transaction:
+        """获取创块交易"""
+        return self.head_trans
+
+    def get_prehash(self) -> str:
+        """获取pre_hash"""
+        return self.pre_hash
 
     def set_prehash(self, pre_hash: str) -> None:
         """设置区块的pre_hash"""
@@ -102,7 +138,7 @@ class Block:
     def __getitem__(self, key: str) -> Any:
         value = getattr(self, key)
         if key == "transactions":   # 每个transaction转换成字符串
-            value = [str(tap) for tap in value]
+            value = [str(self.head_trans)] + [str(tap) for tap in value]
         return value
 
     def __str__(self) -> str:
