@@ -117,6 +117,16 @@ class BlockChain:
         """验证某个输出是否已被消费"""
         tap = f"{block}-{trans}-{output}"
         return tap in self.utxos
+
+    def get_balance(self, address: str) -> Decimal:
+        """查找一个地址的余额"""
+        balance = Btc("0")
+        for utxo in self.utxos:
+            block, trans, output = utxo.split("-")
+            outp = self.get_output(int(block), int(trans), int(output))
+            if outp.address == address:
+                balance += outp.btcs
+        return balance
     
     def __str__(self) -> str:
         return self.get_hash()
@@ -142,7 +152,7 @@ if __name__ == "__main__":
     bc.add_block(b1)
     # key1向key2转账
     t2 = Transaction()
-    t2.add_input(TransInput(0, 0, 0))
+    t2.add_input(TransInput(1, 1, 1))
     t2.add_output(TransOutput(Btc("23.567"), key2.get_address()))
     t2.sign_transaction(key1)
     b2 = Block()

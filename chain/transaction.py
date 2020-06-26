@@ -35,30 +35,27 @@ __all__ = ["Transaction", ]
 
 class Transaction:
     """管理单个交易的类"""
-    def __init__(self, trans: str="") -> None:
+    def __init__(self) -> None:
         """初始化"""
         self.inputs: List[TransInput] = []         # 交易的输入
         self.outputs: List[TransOutput] = []        # 交易的输出
         self.pub_hex = ""       # 验证交易用的公钥
         self.signed = ""         # 签名
-        if trans:
-            self.load_trans(trans)
     
-    def load_trans(self, trans: str) -> None:
-        """根据json数据初始化trans"""
+    @classmethod
+    def load_trans(cls, trans: str) -> "Transaction":
+        """根据json数据获得一个trans"""
+        result = cls()
         trans_dict = json.loads(trans)
         input_list = trans_dict.get("inputs", [])
-        if input_list:
-            self.inputs = []
-            for trans_input in input_list:
-                self.inputs.append(TransInput(trans_input=trans_input))
+        for trans_input in input_list:
+            result.inputs.append(TransInput.load_input(trans_input))
         output_list = trans_dict.get("outputs", [])
-        if output_list:
-            self.outputs = []
-            for trans_output in output_list:
-                self.outputs.append(TransOutput(trans_output=trans_output))
-        self.pub_hex = trans_dict.get("pub_hex", self.pub_hex)
-        self.signed = trans_dict.get("signed", self.signed)
+        for trans_output in output_list:
+            result.outputs.append(TransOutput.load_output(trans_output))
+        result.pub_hex = trans_dict.get("pub_hex", result.pub_hex)
+        result.signed = trans_dict.get("signed", result.signed)
+        return result
 
     def get_pub_key(self) -> UserKey:
         return UserKey(pub_hex=self.pub_hex)
@@ -153,7 +150,7 @@ if __name__ == "__main__":
     trans.sign_transaction(key)
     print(str(trans))
     print(trans.to_string_without_sign())
-    trans2 = Transaction(trans=str(trans))
+    trans2 = Transaction.load_trans(str(trans))
     print(trans2 == trans)
     print(trans2.verify_transaction(key))
     print(str(trans2) == str(trans))

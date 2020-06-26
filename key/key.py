@@ -19,6 +19,12 @@ class UserKey:
         else:                   # 产生一个新key
             self.pub_key, self.pri_key = rsa.newkeys(512)
 
+    @classmethod
+    def load_userkey(cls, all_hex: str) -> "UserKey":
+        """从字符串中导出key"""
+        pub_hex, pri_hex = all_hex.split("-")
+        return cls(pub_hex, pri_hex)
+
     @staticmethod
     def hex_to_key(key_hex: Optional[str], key_type: str) -> Optional[rsa.key.AbstractKey]:
         """把hex的key转换成obj"""
@@ -88,6 +94,9 @@ class UserKey:
     def __ne__(self, other) -> bool:
         """判断两个密钥是否不相等"""
         return self.get_key_hex() != other.get_key_hex()
+    
+    def __str__(self) -> str:
+        return f"{self.get_pub_hex()}-{self.get_pri_hex()}"
 
 
 if __name__ == "__main__":

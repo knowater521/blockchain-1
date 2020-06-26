@@ -10,17 +10,15 @@ __all__ = ["TransOutput", ]
 
 class TransOutput:
     """交易输出"""
-    def __init__(self, btcs: Decimal=Btc("0"), address: str="", trans_output: str="") -> None:
+    def __init__(self, btcs: Decimal=Btc("0"), address: str="") -> None:
         """初始化"""
         self.btcs = btcs
         self.address = address
-        if trans_output:
-            self.load_output(trans_output)
     
-    def load_output(self, trans_output: str) -> None:
+    @classmethod
+    def load_output(cls, trans_output: str) -> "TransOutput":
         tap = trans_output.split("-")
-        self.btcs = Btc((tap[0]))
-        self.address = tap[1]
+        return cls(Btc(tap[0]), tap[1])
 
     def keys(self) -> List[str]:
         return [

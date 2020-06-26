@@ -27,7 +27,7 @@ __all__ = ["Block", ]
 
 class Block:
     """管理区块的类"""
-    def __init__(self, index: int=0, pre_hash: str=FIREST_BLOCK_PREHASH, block: str="") -> None:
+    def __init__(self, index: int=0, pre_hash: str=FIREST_BLOCK_PREHASH) -> None:
         """初始化"""
         self.index = index          # 索引
         self.pre_hash = pre_hash    # 前一个区块的hash
@@ -35,23 +35,23 @@ class Block:
         self.randnum = 0.0          # 随机数
         self.transactions: List[Transaction] = []       # 交易
         self.head_trans = Transaction()                 # 第一笔交易（矿工奖励和交易费）
-        if block:
-            self.load_block(block)
     
-    def load_block(self, block: str) -> None:
+    @classmethod
+    def load_block(cls, block: str) -> "Block":
         """根据json数据导入区块"""
+        result = cls()
         block_dict = json.loads(block)
-        self.index = block_dict.get("index", self.index)        
-        self.pre_hash = block_dict.get("pre_hash", self.pre_hash)
-        self.timestap = block_dict.get("timestap", self.timestap)
-        self.randnum = block_dict.get("randnum", self.randnum)
+        result.index = block_dict.get("index", result.index)        
+        result.pre_hash = block_dict.get("pre_hash", result.pre_hash)
+        result.timestap = block_dict.get("timestap", result.timestap)
+        result.randnum = block_dict.get("randnum", result.randnum)
         trans_list = block_dict.get("transactions", [])    
         if trans_list:
-            self.clear_transactions()
-            self.set_head_transaction(Transaction(trans=trans_list[0]))
+            result.set_head_transaction(Transaction.load_trans(trans_list[0]))
             for trans in trans_list[1:]:
-                t = Transaction(trans=trans)
-                self.add_transaction(t)
+                t = Transaction.load_trans(trans)
+                result.add_transaction(t)
+        return result
 
     def set_index(self, index: int) -> None:
         """设置索引"""
@@ -66,7 +66,7 @@ class Block:
         self.transactions = []
 
     def get_transactions(self) -> List[Transaction]:
-        """获取全部交易"""
+        """获取全部交易（包括第一笔交易）"""
         return [self.head_trans] + self.transactions
 
     def get_user_transactions(self) -> List[Transaction]:
@@ -166,14 +166,14 @@ if __name__ == "__main__":
     trans.add_output(TransOutput(Btc("5.67"), "fsfwetewtette4654654"))
     key = UserKey()
     trans.sign_transaction(key)
-    trans2 = Transaction(str(trans))
+    trans2 = Transaction.load_trans(str(trans))
     trans2.add_input(TransInput(5, 6, 2))
     block = Block()
     block.add_transaction(trans)
     block.add_transaction(trans2)
     tap = str(block)
     print(tap)
-    block2 = Block(block=tap)
+    block2 = Block.load_block(tap)
     print(str(block2))
     print(str(block2) == str(block))
     block.find_randnum()
