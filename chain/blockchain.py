@@ -1,7 +1,7 @@
 """区块链的数据结构"""
 import time
 from hashlib import sha256
-from typing import Tuple, List, Set
+from typing import Tuple, List, Set, Dict
 
 from .btc import Btc
 from .trans_output import TransOutput
@@ -117,14 +117,14 @@ class BlockChain:
         tap = f"{block}-{trans}-{output}"
         return tap in self.utxos
 
-    def get_utxo(self, *address: str) -> List[TransOutput]:
+    def get_utxo(self, *address: str) -> Dict[str, TransOutput]:
         """查找一个或多个地址的所有utxo"""
-        result = []
+        result = {}
         for utxo in self.utxos:
             block, trans, output = utxo.split("-")
             outp = self.get_output(int(block), int(trans), int(output))
             if outp.address in address:
-                result.append(outp)
+                result[utxo] = outp
         return result
     
     def __str__(self) -> str:
