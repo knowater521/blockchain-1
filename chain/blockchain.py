@@ -51,6 +51,7 @@ class BlockChain:
         tap = "".join([str(block) for block in self.get_blocks()])
         tap += str(sorted(self.utxos))
         tap += str(self.height)
+        tap += str(self.start_time)
         self.hash = sha256(tap.encode("utf-8")).hexdigest()
 
     def get_block(self, block: int) -> Block:
@@ -116,6 +117,15 @@ class BlockChain:
         """验证某个输出是否已被消费"""
         tap = f"{block}-{trans}-{output}"
         return tap in self.utxos
+    
+    def __str__(self) -> str:
+        return self.get_hash()
+
+    def __eq__(self, other) -> bool:
+        return str(self) == str(other)
+
+    def __ne__(self, other) -> bool:
+        return str(self) != str(other)
 
 
 if __name__ == "__main__":

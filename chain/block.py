@@ -149,6 +149,12 @@ class Block:
     def __str__(self) -> str:
         return json.dumps(dict(self)).replace(" ", "")
 
+    def __eq__(self, other) -> bool:
+        return str(self) == str(other)
+
+    def __ne__(self, other) -> bool:
+        return str(self) != str(other)
+
 
 if __name__ == "__main__":
     from .trans_input import TransInput

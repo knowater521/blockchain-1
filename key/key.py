@@ -37,7 +37,7 @@ class UserKey:
         return result
 
     def get_key_hex(self) -> Tuple[Optional[str], Optional[str]]:
-        """导出hex形式的密钥"""
+        """导出pub_hex, pri_hex形式的密钥"""
         return self.get_pub_hex(), self.get_pri_hex()
 
     def get_pub_hex(self) -> Optional[str]:
@@ -80,6 +80,14 @@ class UserKey:
         except rsa.VerificationError as e:
             print(e)
         return result == "SHA-256"
+    
+    def __eq__(self, other) -> bool:
+        """判断两个密钥是否相等"""
+        return self.get_key_hex() == other.get_key_hex()
+    
+    def __ne__(self, other) -> bool:
+        """判断两个密钥是否不相等"""
+        return self.get_key_hex() != other.get_key_hex()
 
 
 if __name__ == "__main__":

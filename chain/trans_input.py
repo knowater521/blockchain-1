@@ -34,3 +34,9 @@ class TransInput:
     def __str__(self) -> str:
         """block-trans-output"""
         return f"{self.block}-{self.trans}-{self.output}"
+
+    def __eq__(self, other) -> bool:
+        return str(self) == str(other)
+
+    def __ne__(self, other) -> bool:
+        return str(self) != str(other)

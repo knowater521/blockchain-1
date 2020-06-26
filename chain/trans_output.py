@@ -37,3 +37,9 @@ class TransOutput:
         if tap:
             tap = "0"
         return f"{tap}-{self.address}"
+    
+    def __eq__(self, other) -> bool:
+        return str(self) == str(other)
+
+    def __ne__(self, other) -> bool:
+        return str(self) != str(other)
