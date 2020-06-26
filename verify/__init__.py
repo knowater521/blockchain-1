@@ -60,8 +60,7 @@ class Verify:
         # 计算矿工奖励
         mini_fee = trans.compute_outputs_btcs() - fee
         # 计算这个区块时的矿工奖励
-        tap = 2**(block.get_index() // REDUCE_BTCS_HEIGHT)
-        mini_btcs = Btc(MINING_BTCS) / Btc(str(tap))
+        mini_btcs = block.get_now_ming_btcs()
         # 验证矿工奖励合法性
         if mini_fee != mini_btcs:
             return False

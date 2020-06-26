@@ -16,7 +16,8 @@ import time
 from hashlib import sha256
 from typing import Any, List
 
-from config import HEAD_HASH, MINING_ADD_NUM, FIREST_BLOCK_PREHASH
+from config import HEAD_HASH, MINING_ADD_NUM, FIREST_BLOCK_PREHASH, MINING_BTCS, REDUCE_BTCS_HEIGHT
+from .btc import Btc
 from .trans_input import TransInput
 from .trans_output import TransOutput
 from .transaction import Transaction
@@ -107,6 +108,12 @@ class Block:
     def get_head_transaction(self) -> Transaction:
         """获取创块交易"""
         return self.head_trans
+
+    def get_now_ming_btcs(self) -> Btc:
+        """计算当前区块时的矿工奖励"""
+        tap = 2**(self.get_index() // REDUCE_BTCS_HEIGHT)
+        mini_btcs = Btc(MINING_BTCS) / Btc(str(tap))
+        return mini_btcs
 
     def get_prehash(self) -> str:
         """获取pre_hash"""
