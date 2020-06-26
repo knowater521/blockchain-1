@@ -38,7 +38,7 @@ class FormatTrans(BaseTransVerify):
         if not self.trans.get_outputs():
             return False
         # 必须签名
-        if not self.trans.get_pub_key() or not self.trans.get_signed():
+        if not self.trans.get_pub_keys() or not self.trans.get_signeds():
             return False
         return True
 
@@ -49,7 +49,7 @@ class SignedTrans(BaseTransVerify):
         super().__init__(trans)
     
     def is_ok(self) -> bool:
-        address = self.trans.get_pub_key().get_address()
+        address_list = [key.get_address() for key in self.trans.get_pub_keys()]
         # 签名必须有效
         if not self.trans.verify_transaction():
             return False
@@ -57,7 +57,7 @@ class SignedTrans(BaseTransVerify):
         for inp in self.trans.get_inputs():
             blc = BlockChain.get_instance()
             outp = blc.input_to_output(inp)
-            if address != outp.address:
+            if outp.address not in address_list:
                 return False
         return True
 

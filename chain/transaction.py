@@ -56,11 +56,13 @@ class Transaction:
         result.signed = trans_dict.get("signed", result.signed)
         return result
 
-    def get_pub_key(self) -> UserKey:
-        return UserKey(pub_hex=self.pub_hex)
+    def get_pub_keys(self) -> List[UserKey]:
+        """获取交易中的全部公钥"""
+        return [UserKey(pub_hex=key) for key in self.pub_hex.split("-")]
     
-    def get_signed(self) -> str:
-        return self.signed
+    def get_signeds(self) -> List[str]:
+        """获取交易中的全部签名"""
+        return self.signed.split("-")
 
     def get_input(self, input: int) -> TransInput:
         """获取第input个输入"""
@@ -93,21 +95,32 @@ class Transaction:
         """向交易中添加输出"""
         self.outputs.append(trans_output)
 
+    def clear_signed(self) -> None:
+        """清除签名"""
+        self.pub_hex = ""
+        self.signed = ""
+
     def sign_transaction(self, user_key: UserKey) -> None:
         """对交易进行签名"""
         info = self.to_string_without_sign()
         pub = user_key.get_pub_hex()
         if pub is None:
             raise RuntimeError("public key is None!")
-        self.pub_hex = pub
-        self.signed = user_key.sign(info)
+        signed = user_key.sign(info)
+        if not self.pub_hex:        # 如果还没有签名
+            self.pub_hex = pub
+            self.signed = signed
+        else:                       # 签过了，则多重签
+            self.pub_hex += "-" + pub
+            self.signed += "-" + signed
 
-    def verify_transaction(self, user_key: UserKey=None) -> bool:
+    def verify_transaction(self) -> bool:
         """用公钥验证交易"""
         info = self.to_string_without_sign()
-        if user_key is None:
-            user_key = UserKey(pub_hex=self.pub_hex)
-        return user_key.verify(info, self.signed, user_key.get_pub_hex())
+        for user_key, signed in zip(self.get_pub_keys(), self.get_signeds()):
+            if not user_key.verify(info, signed, user_key.get_pub_hex()):
+                return False
+        return True
 
     def keys(self) -> List[str]:
         return [
@@ -146,10 +159,14 @@ if __name__ == "__main__":
     trans.add_input(TransInput(3, 5, 7))
     trans.add_output(TransOutput(Btc("5.67"), "fsfwetewtette4654654"))
     key = UserKey()
+    key2 = UserKey()
+    key3 = UserKey()
     trans.sign_transaction(key)
+    trans.sign_transaction(key2)
+    trans.sign_transaction(key3)
     print(str(trans))
     print(trans.to_string_without_sign())
     trans2 = Transaction.load_trans(str(trans))
     print(trans2 == trans)
-    print(trans2.verify_transaction(key))
+    print(trans2.verify_transaction())
     print(str(trans2) == str(trans))
