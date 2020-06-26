@@ -1,7 +1,7 @@
 """验证用户交易合法性"""
 import re
 
-from chain import Transaction, BlockChain
+from chain import Btc, Transaction, BlockChain
 from .base import BaseTransVerify
 
 
@@ -20,7 +20,7 @@ class InpOutpTrans(BaseTransVerify):
                 return False
         # 输出的值应合法
         for outp in self.trans.get_outputs():
-            if outp.btcs <= 0 or not re.match(r"[0-9a-f]{64}", outp.address):
+            if outp.btcs <= Btc("0") or not re.match(r"[0-9a-f]{64}", outp.address):
                 return False
         return True
 
@@ -70,7 +70,7 @@ class AmountTrans(BaseTransVerify):
     def is_ok(self) -> bool:
         # 交易费必须大于0
         blc = BlockChain.get_instance()
-        return blc.compute_transaction_fee(self.trans) > 0
+        return blc.compute_transaction_fee(self.trans) > Btc("0")
 
 
 TransVerify = [InpOutpTrans, FormatTrans, SignedTrans, AmountTrans]

@@ -1,5 +1,4 @@
 """配置文件"""
-from decimal import Decimal
 
 FIREST_BLOCK_PREHASH = "0" * 64         # 第一个区块的pre_hash的值
 
@@ -13,6 +12,6 @@ HEAD_HASH = "000"                       # 挖矿难度（64位以内的16进制�
 
 MINING_ADD_NUM = 0.0001                 # 找矿时的递增值
 
-MINING_BTCS = Decimal("50")             # 矿工的的奖励
+MINING_BTCS = "50"                      # 矿工的的奖励
 
 REDUCE_BTCS_HEIGHT = 210000             # 每多少个区块，矿工奖励减半

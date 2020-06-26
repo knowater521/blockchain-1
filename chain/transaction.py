@@ -22,7 +22,6 @@ dict类型：
 """
 import json
 from typing import List, Any
-from decimal import Decimal
 
 from key import UserKey
 from .btc import Btc
@@ -83,7 +82,7 @@ class Transaction:
         """获取全部输出"""
         return self.outputs
 
-    def compute_outputs_btcs(self) -> Decimal:
+    def compute_outputs_btcs(self) -> Btc:
         """计算一个交易中的输出总btc"""
         fee = Btc("0")
         for outp in self.get_outputs():

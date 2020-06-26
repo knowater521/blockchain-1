@@ -1,7 +1,6 @@
 """区块链的数据结构"""
 import time
 from hashlib import sha256
-from decimal import Decimal
 from typing import Tuple, List, Set
 
 from .btc import Btc
@@ -78,14 +77,14 @@ class BlockChain:
         """定位到第block个区块、trans笔交易、inp个输出"""
         return self.get_block(block).get_input(trans, inp)
 
-    def compute_block_fee(self, block: Block) -> Decimal:
+    def compute_block_fee(self, block: Block) -> Btc:
         """计算一个区块中的总交易费"""
         fee = Btc("0")
         for trans in block.get_user_transactions():
             fee += self.compute_transaction_fee(trans)
         return fee
 
-    def compute_transaction_fee(self, trans: Transaction) -> Decimal:
+    def compute_transaction_fee(self, trans: Transaction) -> Btc:
         """计算一笔交易的交易费"""
         inp_btcs = Btc("0")
         for inp in trans.get_inputs():
@@ -118,15 +117,15 @@ class BlockChain:
         tap = f"{block}-{trans}-{output}"
         return tap in self.utxos
 
-    def get_balance(self, address: str) -> Decimal:
-        """查找一个地址的余额"""
-        balance = Btc("0")
+    def get_utxo(self, *address: str) -> List[TransOutput]:
+        """查找一个或多个地址的所有utxo"""
+        result = []
         for utxo in self.utxos:
             block, trans, output = utxo.split("-")
             outp = self.get_output(int(block), int(trans), int(output))
-            if outp.address == address:
-                balance += outp.btcs
-        return balance
+            if outp.address in address:
+                result.append(outp)
+        return result
     
     def __str__(self) -> str:
         return self.get_hash()

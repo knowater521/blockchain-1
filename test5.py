@@ -20,7 +20,7 @@ if __name__ == "__main__":
     b1.add_transaction(t1)
     # 添加矿工奖励交易
     mt1 = Transaction()
-    mt1.add_output(TransOutput(MINING_BTCS, key1.get_address()))
+    mt1.add_output(TransOutput(Btc(MINING_BTCS), key1.get_address()))
     b1.set_head_transaction(mt1)
     b1.set_index(1)
     # 挖矿
@@ -37,7 +37,7 @@ if __name__ == "__main__":
     b2 = Block(pre_hash=b1.get_hash())
     b2.add_transaction(t2)
     mt2 = Transaction()
-    mt2.add_output(TransOutput(MINING_BTCS, key2.get_address()))
+    mt2.add_output(TransOutput(Btc(MINING_BTCS), key2.get_address()))
     # 计算交易费
     fee = bc.compute_block_fee(b2)
     mt2.add_output(TransOutput(fee, key2.get_address()))

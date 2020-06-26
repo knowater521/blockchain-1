@@ -1,5 +1,4 @@
 """交易输出的数据结构"""
-from decimal import Decimal
 from typing import List
 
 from .btc import Btc
@@ -10,7 +9,7 @@ __all__ = ["TransOutput", ]
 
 class TransOutput:
     """交易输出"""
-    def __init__(self, btcs: Decimal=Btc("0"), address: str="") -> None:
+    def __init__(self, btcs: Btc=Btc("0"), address: str="") -> None:
         """初始化"""
         self.btcs = btcs
         self.address = address
