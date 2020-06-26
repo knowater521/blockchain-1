@@ -48,5 +48,5 @@ if __name__ == "__main__":
     if not Verify.verify_block_depth(b2):
         print("区块有问题")
     bc.add_block(b2)
-    if not Verify.verify_blockchain_depth(bc):
+    if not Verify.verify_blockchain_depth():
         print("区块链有问题")

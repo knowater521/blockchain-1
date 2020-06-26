@@ -1,7 +1,7 @@
 """verify的基类"""
 import abc
 
-from chain import Transaction, Block, BlockChain
+from chain import Transaction, Block
 
 
 __all__ = ["BaseTransVerify", "BaseBlockVerify", "BaseBlockChainVerify", ]
@@ -24,5 +24,5 @@ class BaseBlockVerify(BaseVerify):
 
 
 class BaseBlockChainVerify(BaseVerify):
-    def __init__(self, blc: BlockChain) -> None:
-        self.blc = blc
+    def __init__(self) -> None:
+        pass

@@ -1,4 +1,4 @@
-"""pass"""
+"""底层货币单位"""
 from decimal import Decimal
 
 from config import MIN_PRECISION_BTC

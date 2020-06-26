@@ -26,10 +26,15 @@ class BlockChain:
 
     @classmethod
     def get_instance(cls) -> "BlockChain":
-        """单例模式设计"""
+        """单例模式设计，全局唯一"""
         if cls.__instance is None:
             cls.__instance = BlockChain()
         return cls.__instance
+
+    @classmethod
+    def set_instance(cls, blc: "BlockChain") -> None:
+        """重设blc"""
+        cls.__instance = blc
 
     def get_start_time(self) -> time.struct_time:
         """获取区块链的创建时间"""
@@ -113,7 +118,7 @@ class BlockChain:
         return self.blocks[-1]
     
     def verify_utxo(self, block: int, trans: int, output: int) -> bool:
-        """验证某个输出是否已被消费"""
+        """验证某个输出是否未被消费"""
         tap = f"{block}-{trans}-{output}"
         return tap in self.utxos
 

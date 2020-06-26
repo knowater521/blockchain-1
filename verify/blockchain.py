@@ -11,12 +11,12 @@ __all__ = ["BlockChainVerify", ]
 
 class OrderBlockChain(BaseBlockChainVerify):
     """验证区块链的顺序性"""
-    def __init__(self, blc: BlockChain) -> None:
-        super().__init__(blc)
+    def __init__(self) -> None:
+        super().__init__()
     
     def is_ok(self) -> bool:
         pre_hash = FIREST_BLOCK_PREHASH
-        for i, block in enumerate(self.blc.get_blocks()):
+        for i, block in enumerate(BlockChain.get_instance().get_blocks()):
             # 索引值index应合法
             if block.get_index() != i + 1:
                 return False
@@ -29,13 +29,14 @@ class OrderBlockChain(BaseBlockChainVerify):
 
 class TimestapBlockChain(BaseBlockChainVerify):
     """检查每个区块的时间戳"""
-    def __init__(self, blc: BlockChain) -> None:
-        super().__init__(blc)
+    def __init__(self) -> None:
+        super().__init__()
     
     def is_ok(self) -> bool:
-        for block in self.blc.get_blocks():
+        blc = BlockChain.get_instance()
+        for block in blc.get_blocks():
             # 区块的时间戳肯定比区块链要后
-            if block.get_timestap() < self.blc.get_start_time():
+            if block.get_timestap() < blc.get_start_time():
                 return False
             # 区块的时间戳肯定比现在前
             if block.get_timestap() > time.localtime():

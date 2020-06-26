@@ -55,8 +55,7 @@ class SignedTrans(BaseTransVerify):
             return False
         # 每一个输入都为本人的utxo
         for inp in self.trans.get_inputs():
-            blc = BlockChain.get_instance()
-            outp = blc.input_to_output(inp)
+            outp = BlockChain.get_instance().input_to_output(inp)
             if outp.address not in address_list:
                 return False
         return True

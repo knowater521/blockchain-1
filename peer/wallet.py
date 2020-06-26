@@ -43,8 +43,9 @@ class Wallet:
         if key is not None:
             self.user_keys.remove(str(key))
 
-    def sync_balance(self, blc: BlockChain) -> None:
+    def sync_balance(self) -> None:
         """用blc更新钱包余额"""
+        blc = BlockChain.get_instance()
         self.utxos = blc.get_utxo(*[user_key.get_address() for user_key in self.get_keys()])
         for outp in self.utxos.values():
             self.balance[outp.address] += outp.btcs

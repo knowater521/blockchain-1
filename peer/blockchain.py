@@ -15,7 +15,8 @@ class FullBlockChain:
     
     def set_blockchain(self, blc: BlockChain) -> None:
         """设定区块链数据库"""
-        self.blc = blc
+        BlockChain.set_instance(blc)
+        self.blc = BlockChain.get_instance()
     
     def lookup_utxo(self, *address: str) -> Dict[str, TransOutput]:
         """查找一个或多个地址的utxo"""

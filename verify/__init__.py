@@ -17,6 +17,17 @@ class Verify:
                 return False
         return True
 
+    @classmethod
+    def verify_new_transaction(cls, trans: Transaction) -> bool:
+        """验证一笔新交易"""
+        if not cls.verify_transaction(trans):
+            return False
+        # 验证输入的有效性
+        for inp in trans.get_inputs():
+            if not BlockChain.get_instance().verify_utxo(inp.block, inp.trans, inp.output):
+                return False
+        return True
+
     @staticmethod
     def verify_block(block: Block) -> bool:
         """简单验证区块"""
@@ -26,10 +37,10 @@ class Verify:
         return True
     
     @staticmethod
-    def verify_blockchain(blc: BlockChain) -> bool:
+    def verify_blockchain() -> bool:
         """简单验证区块链"""
         for verify in BlockChainVerify:
-            if not verify(blc).is_ok():
+            if not verify().is_ok():
                 return False
         return True
 
@@ -57,11 +68,11 @@ class Verify:
         return True
     
     @classmethod
-    def verify_blockchain_depth(cls, blc: BlockChain) -> bool:
+    def verify_blockchain_depth(cls) -> bool:
         """深入验证区块链（区块、交易）"""
-        if not cls.verify_blockchain(blc):
+        if not cls.verify_blockchain():
             return False
-        for block in blc.get_blocks()[1:]:      # 第一个区块不作检查
+        for block in BlockChain.get_instance().get_blocks()[1:]:      # 第一个区块不作检查
             if not cls.verify_block_depth(block):
                 return False
         return True
