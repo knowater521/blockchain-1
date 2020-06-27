@@ -7,6 +7,9 @@ from chain import Btc, Block, Transaction, BlockChain, TransOutput
 from verify import Verify
 
 
+__all__ = ["Miner", ]
+
+
 class Miner:
     def __init__(self) -> None:
         self.trans_cache = Queue()  # 交易池
@@ -15,7 +18,7 @@ class Miner:
 
     def mining(self, block: Block) -> Block:
         """挖矿"""
-        trans_list = self.get_mining_trans()
+        trans_list = self.__get_mining_trans()
         blc = BlockChain.get_instance()
         block = Block(blc.get_height() + 1, blc.get_top_block().get_hash())
         # 计算总交易费
@@ -38,7 +41,7 @@ class Miner:
         if Verify.verify_new_transaction(trans):
             self.trans_cache.put(trans)
     
-    def get_mining_trans(self) -> List[Transaction]:
+    def __get_mining_trans(self) -> List[Transaction]:
         """获取用于打包区块的交易（阻塞）"""
         trans_list = []
         for i in range(self.trans_num):
@@ -46,3 +49,6 @@ class Miner:
             trans_list.append(tap)
         return trans_list
 
+    def accept_block(self, block: Block) -> None:
+        """胜利者已经产生（新块已加入区块链）"""
+        pass

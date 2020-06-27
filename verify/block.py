@@ -7,6 +7,15 @@ from .base import BaseBlockVerify
 __all__ = ["BlockVerify", ]
 
 
+class HashBlock(BaseBlockVerify):
+    """区块hash值的验证"""
+    def __init__(self, block: Block) -> None:
+        super().__init__(block)
+    
+    def is_ok(self) -> bool:
+        return self.block.veri_hash()
+
+
 class FormatBlock(BaseBlockVerify):
     """区块格式的验证"""
     def __init__(self, block: Block) -> None:
@@ -20,13 +29,4 @@ class FormatBlock(BaseBlockVerify):
         return True
 
 
-class HashBlock(BaseBlockVerify):
-    """区块hash值的验证"""
-    def __init__(self, block: Block) -> None:
-        super().__init__(block)
-    
-    def is_ok(self) -> bool:
-        return self.block.veri_hash()
-
-
-BlockVerify = [FormatBlock, HashBlock]
+BlockVerify = [HashBlock, FormatBlock]

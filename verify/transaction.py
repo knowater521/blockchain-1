@@ -15,9 +15,14 @@ class InpOutpTrans(BaseTransVerify):
     
     def is_ok(self) -> bool:
         # 输入的值应合法
-        for inp in self.trans.get_inputs():
+        inputs = self.trans.get_inputs()
+        for inp in inputs:
             if inp.block <= 0 or inp.trans <= 0 or inp.output <= 0:
                 return False
+        # 输入的值不能有重复的
+        tap = [str(inp) for inp in inputs]
+        if len(set(tap)) != len(tap):
+            return False
         # 输出的值应合法
         for outp in self.trans.get_outputs():
             if outp.btcs <= Btc("0") or not re.match(r"[0-9a-f]{64}", outp.address):

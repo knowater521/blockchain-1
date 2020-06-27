@@ -2,7 +2,8 @@
 from typing import Dict
 from collections import defaultdict
 
-from chain import Btc, TransOutput, BlockChain
+from chain import Btc, TransOutput, Block, BlockChain
+from verify import Verify
 
 
 __all__ = ["FullBlockChain", ]
@@ -11,12 +12,15 @@ __all__ = ["FullBlockChain", ]
 class FullBlockChain:
     """完整的账本"""
     def __init__(self) -> None:
-        self.blc = BlockChain.get_instance()
+        pass
+
+    @property
+    def blc(self) -> BlockChain:
+        return BlockChain.get_instance()
     
     def set_blockchain(self, blc: BlockChain) -> None:
         """设定区块链数据库"""
         BlockChain.set_instance(blc)
-        self.blc = BlockChain.get_instance()
     
     def lookup_utxo(self, *address: str) -> Dict[str, TransOutput]:
         """查找一个或多个地址的utxo"""
@@ -36,3 +40,10 @@ class FullBlockChain:
     def get_height(self) -> int:
         """获取本账本的高度"""
         return self.blc.get_height()
+
+    def add_new_block(self, block: Block) -> bool:
+        """添加新块（带验证）"""
+        if Verify.verify_new_block(block):
+            self.blc.add_block(block)
+            return True
+        return False
