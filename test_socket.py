@@ -28,7 +28,7 @@ def server2():
     server.close()
 
 
-def client():
+def client2():
     client = socket(AF_INET, SOCK_STREAM)
     client.connect(("127.0.0.1", 12000))
     for i in range(10):
@@ -38,7 +38,7 @@ def client():
 
 if __name__ == "__main__":
     t1 = Thread(target=server2)
-    t2 = Thread(target=client)
+    t2 = Thread(target=client2)
     t1.setDaemon(True)
     t2.setDaemon(True)
     t1.start()
@@ -47,3 +47,7 @@ if __name__ == "__main__":
     sleep(8)
     flag = False
     print(num)
+    # client = socket(AF_INET, SOCK_STREAM)
+    # client.connect(("www.baidu.com", 80))
+    # client.connect(("www.oct-month.top", 80))
+    # client.close()

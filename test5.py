@@ -5,6 +5,7 @@ from verify import Verify
 
 
 if __name__ == "__main__":
+    print(BlockChain.__qualname__, BlockChain.get_instance.__qualname__)
     # 创建区块链
     bc = BlockChain.get_instance()
     print(bc.get_start_time())

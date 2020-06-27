@@ -28,7 +28,7 @@ class BlockChain:
     def get_instance(cls) -> "BlockChain":
         """单例模式设计，全局唯一"""
         if cls.__instance is None:
-            cls.__instance = BlockChain()
+            cls.__instance = cls()
         return cls.__instance
 
     @classmethod
