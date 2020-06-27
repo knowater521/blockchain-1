@@ -13,5 +13,6 @@ REDUCE_BTCS_HEIGHT = 210000             # 每多少个区块，矿工奖励减�
 
 # 路由服务的配置
 NETWORK_ROUTING_ADDRESS = "0.0.0.0"     # 路由服务监听地址
-NETWORK_ROUTING_PORT = 12000            # 路由服务监听端口
+NETWORK_ROUTING_PORT = 2020             # 路由服务监听端口
 NETWORK_ROUTING_SERVER_NUM = 5          # 最大连接数
+NETWORK_TIMEOUT_SECS = 2                # 套接字操作的超时时间 float

@@ -3,3 +3,4 @@
 from .wallet import Wallet
 from .miner import Miner
 from .blockchain import FullBlockChain
+from .network_routing import NetworkRouting

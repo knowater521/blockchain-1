@@ -1,20 +1,30 @@
 """网络路由"""
-from typing import Set, Tuple
+from typing import Set, Tuple, List
 from socket import socket, AF_INET, SOCK_STREAM
 from threading import Thread
+from queue import Queue
 
-from config import NETWORK_ROUTING_PORT, NETWORK_ROUTING_ADDRESS, NETWORK_ROUTING_SERVER_NUM
+from config import NETWORK_ROUTING_PORT, NETWORK_ROUTING_ADDRESS, NETWORK_ROUTING_SERVER_NUM, NETWORK_TIMEOUT_SECS
+
+
+__all__ = ["NetworkRouting", ]
 
 
 class NetworkRouting:
     def __init__(self) -> None:
         self.nodes: Set[Node] = set()        # 本机连接的节点 {("127.0.0.1", 3347), }
         self.blacklist: Set[Node] = set()    # 黑名单（拒绝这些节点的连接）
-        self.client = socket(AF_INET, SOCK_STREAM)      # client socket
-        self.server = socket(AF_INET, SOCK_STREAM)      # server socket
-        self.server.bind((NETWORK_ROUTING_ADDRESS, NETWORK_ROUTING_PORT))
-        self.server.listen(NETWORK_ROUTING_SERVER_NUM)
+        self.server_flag = True
+        self.msg_queue: Queue[str] = Queue()    # 消息队列
     
+    def get_a_msg(self) -> str:
+        """从消息队列中取一个消息（阻塞）"""
+        return self.msg_queue.get()
+
+    def get_nodes(self) -> List[str]:
+        """拿到所有节点"""
+        return [str(node) for node in self.nodes]
+
     def add_node(self, node: str) -> None:
         """增加新节点"""
         self.nodes.add(Node.load_node(node))
@@ -30,15 +40,20 @@ class NetworkRouting:
     def broadcast_info(self, info: str) -> None:
         """广播信息"""
         for node in self.nodes:
-            if not node.send_info(self.client, info):
+            if not node.send_info(info):
                 print("Errror on connect to host:", str(node))
 
     def start_server(self) -> None:
-        """打开服务"""
-        flag = True
+        """打开服务（守护线程）"""
+        self.server_flag = True
         def run():
-            while flag:
-                conn, addr = self.server.accept()
+            server = socket(AF_INET, SOCK_STREAM)      # server socket
+            server.bind((NETWORK_ROUTING_ADDRESS, NETWORK_ROUTING_PORT))
+            server.listen(NETWORK_ROUTING_SERVER_NUM)
+            while self.server_flag:
+                conn, addr = server.accept()
+                if Node(*addr) in self.blacklist:   # 黑名单中的节点不提供服务
+                    continue
                 data_list = []
                 while True:
                     data = conn.recv(1024).decode("utf-8")
@@ -46,10 +61,17 @@ class NetworkRouting:
                         break
                     data_list.append(data)
                 data = "".join(data_list)
-                # TODO 处理请求
+                self.msg_queue.put(data)    # 把收到的请求放到消息队列里
+            server.close()
         t = Thread(target=run)
+        t.setName("NetworkRouting Thread")
         t.setDaemon(True)
         t.start()
+    
+    def close_server(self) -> None:
+        """关闭服务"""
+        self.server_flag = False
+        Node("localhost", NETWORK_ROUTING_PORT).send_info("")
 
 
 class Node:
@@ -62,12 +84,14 @@ class Node:
         name, port = node.split(":")
         return cls(name, int(port))
 
-    def send_info(self, socket: socket, info: str) -> bool:
+    def send_info(self, info: str) -> bool:
         """发送信息给node"""
         try:
-            socket.connect((self.name, self.port))
-            socket.sendall(info.encode("utf-8"))
-            socket.close()
+            client = socket(AF_INET, SOCK_STREAM)      # client socket
+            client.settimeout(NETWORK_TIMEOUT_SECS)
+            client.connect((self.name, self.port))
+            client.sendall(info.encode("utf-8"))
+            client.close()
             return True
         except Exception as e:
             return False

@@ -1,5 +1,6 @@
 # 项目文件
 .vscode/
+.idea/
 
 # 环境文件
 .mypy_cache/
