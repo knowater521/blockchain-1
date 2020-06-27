@@ -35,6 +35,9 @@ class TransOutput:
             tap = "0"
         return f"{tap}-{self.address}"
     
+    def __hash__(self) -> int:
+        return hash(str(self))
+
     def __eq__(self, other) -> bool:
         return str(self) == str(other)
 

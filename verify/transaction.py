@@ -20,8 +20,7 @@ class InpOutpTrans(BaseTransVerify):
             if inp.block <= 0 or inp.trans <= 0 or inp.output <= 0:
                 return False
         # 输入的值不能有重复的
-        tap = [str(inp) for inp in inputs]
-        if len(set(tap)) != len(tap):
+        if len(set(inputs)) != len(inputs):
             return False
         # 输出的值应合法
         for outp in self.trans.get_outputs():

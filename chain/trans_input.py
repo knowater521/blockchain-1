@@ -28,6 +28,9 @@ class TransInput:
     def __getitem__(self, key: str) -> int:
         return getattr(self, key)
     
+    def __hash__(self) -> int:
+        return hash(str(self))
+
     def __str__(self) -> str:
         """block-trans-output"""
         return f"{self.block}-{self.trans}-{self.output}"

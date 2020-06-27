@@ -47,3 +47,6 @@ class FullBlockChain:
             self.blc.add_block(block)
             return True
         return False
+
+    # TODO 同步主链
+    # TODO 查询服务

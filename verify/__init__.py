@@ -51,8 +51,7 @@ class Verify:
                 return False
             inputs.extend(trans.get_inputs())
         # 不同的交易不能有相同的输入
-        tap = [str(inp) for inp in inputs]
-        if len(set(tap)) != len(tap):
+        if len(set(inputs)) != len(inputs):
             return False
         return True
 

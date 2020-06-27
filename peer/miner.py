@@ -32,7 +32,7 @@ class Miner:
         head_trans = Transaction()
         head_trans.add_output(TransOutput(address=self.address, btcs=fee))
         block.set_head_transaction(head_trans)
-        # 正式挖矿
+        # 正式开始挖矿
         block.find_randnum()
         return block
 
@@ -40,6 +40,7 @@ class Miner:
         """往交易池中添加交易（先验证）"""
         if Verify.verify_new_transaction(trans):
             self.trans_cache.put(trans)
+            # TODO 广播交易
     
     def __get_mining_trans(self) -> List[Transaction]:
         """获取用于打包区块的交易（阻塞）"""
@@ -51,4 +52,5 @@ class Miner:
 
     def accept_block(self, block: Block) -> None:
         """胜利者已经产生（新块已加入区块链）"""
-        pass
+        # TODO 广播新块
+        # TODO 停止挖矿

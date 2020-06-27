@@ -81,6 +81,9 @@ class Btc:
         """>="""
         return self.value >= other.value
 
+    def __hash__(self) -> int:
+        return hash(str(self))
+
     def __str__(self) -> str:
         return self.__format_value(str(self.value))
     
