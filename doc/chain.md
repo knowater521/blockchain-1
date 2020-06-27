@@ -1,18 +1,14 @@
-"""区块链的整体数据结构"""
-# 区块中的序列从1开始计算
-from .btc import Btc
-from .trans_input import TransInput
-from .trans_output import TransOutput
-from .transaction import Transaction
-from .block import Block
-from .blockchain import BlockChain
+# 底层的区块链数据结构
 
+## 类结构视图
 
-__all__ = ["Btc", "TransInput", "TransOutput", "Transaction", "Block", "BlockChain", ]
+![chain](.img/chain.png)
 
 
 
-"""
+## json结构视图
+
+```json
 # BlockChain 类
 [
     # Block 类
@@ -50,4 +46,7 @@ __all__ = ["Btc", "TransInput", "TransOutput", "Transaction", "Block", "BlockCha
     },
 	# ... 多个区块
 ]
-"""
+```
+
+
+

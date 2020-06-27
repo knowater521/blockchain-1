@@ -47,13 +47,13 @@ class UserKey:
         return self.get_pub_hex(), self.get_pri_hex()
 
     def get_pub_hex(self) -> Optional[str]:
-        """导出公钥"""
+        """导出公钥的hex"""
         if self.pub_key:
             return self.pub_key.save_pkcs1().hex()
         return None
 
     def get_pri_hex(self) -> Optional[str]:
-        """导出私钥"""
+        """导出私钥的hex"""
         if self.pri_key:
             return self.pri_key.save_pkcs1().hex()
         return None
