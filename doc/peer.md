@@ -18,9 +18,41 @@ W - 钱包	M - 矿工	B - 完整的区块链数据库	N - 网络路由
 
 
 
-## N功能
+## N
 
-![peer](.img/peer.png)
+> 接收方-类型-指令-数据
+>
+> N-GET--															# 返回自身连接的节点
+>
+> N-PUT--{msg消息}											# 广播msg消息
+
+## B
+
+> 接收方-类型-指令-数据
+>
+> B-PUT--{block的序列信息}								# 添加新块，然后广播
+>
+> B-GET-UTXO-[多个地址的序列信息]				# 返回这些地址的多个utxo 
+>
+> B-GET-BALANCE-[多个地址的序列信息]			# 返回这些地址的余额
+>
+> B-GET-HASH-														# 返回区块链的hash值
+>
+> B-GET-HEIGHT-													# 返回区块链的高度
+>
+> B-GET-BLOCK-{block的index}							# 返回指定索引位置的区块
+
+## W
+
+
+
+## M
+
+> M-PUT-{transaction的序列信息}					# 添加交易，广播交易
+>
+> M-PUT-{block的序列信息}								# 暂停挖矿，开始新一轮挖矿
+>
+> M-GET-STOP														# 停止挖矿
 
 
 

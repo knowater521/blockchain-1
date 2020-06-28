@@ -20,7 +20,7 @@ class NetworkRouting:
         self.nodes.add(Node("localhost", NETWORK_ROUTING_PORT)) # 必然包括本机
         self.blacklist: Set[Node] = set()    # 黑名单（拒绝这些节点的连接）
         self.server_flag = True
-        self.recv_msgs: Dict[str, Queue] = defaultdict(Queue)  # 接收消息队列，不同的消息对应不同的队列
+        self.recv_msgs: Dict[str, Queue[Tuple[Node, str]]] = defaultdict(Queue)  # 接收消息队列，不同的消息对应不同的队列
         self.send_msgs: Queue[str] = Queue()    # 发送消息队列
 
     @classmethod
@@ -29,12 +29,12 @@ class NetworkRouting:
             cls.__instance = cls()
         return cls.__instance
 
-    def get_a_msg(self, msg_type: type) -> str:
+    def get_a_msg(self, msg_type: type) -> Tuple[Node, str]:
         """从消息队列中取一个消息（阻塞）"""
         return self.recv_msgs[msg_type.__name__].get()
 
-    def add_a_msg(self, msg: Any) -> None:
-        """发送一个消息给"""
+    def broad_a_msg(self, msg: Any) -> None:
+        """广播一个消息"""
         if msg:
             msg_head = type(msg).__name__       # 使用类名作为消息头
             self.send_msgs.put(msg_head + "-" + str(msg))
@@ -85,7 +85,7 @@ class NetworkRouting:
                 if len(data_list) >= 2:
                     msg_head = data_list[0]
                     msg_body = "".join(data_list[1:])
-                    self.recv_msgs[msg_head].put(msg_body)
+                    self.recv_msgs[msg_head].put((Node(addr), msg_body))
             server.close()
         def send_msg():
             """发送消息线程"""
@@ -102,7 +102,7 @@ class NetworkRouting:
     def close_server(self) -> None:
         """关闭服务"""
         self.server_flag = False
-        self.add_a_msg(" ")
+        self.broad_a_msg(" ")
 
 
 class Node:

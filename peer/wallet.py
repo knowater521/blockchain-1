@@ -4,6 +4,7 @@ from collections import defaultdict
 
 from key import UserKey
 from chain import Btc, TransInput, TransOutput, Transaction
+from .fullblockchain import FullBlockChain
 
 
 __all__ = ["Wallet", ]
@@ -45,7 +46,7 @@ class Wallet:
 
     def sync_balance(self) -> None:
         """用blc更新钱包余额""" # TODO
-        blc = BlockChain.get_instance()
+        blc = FullBlockChain.get_instance()
         self.utxos = blc.get_utxo(*[user_key.get_address() for user_key in self.get_keys()])
         for outp in self.utxos.values():
             self.balance[outp.address] += outp.btcs

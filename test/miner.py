@@ -8,7 +8,7 @@ from config import MAX_USER_TRANSACTION_NUMBER, MINING_ADD_NUM
 from chain import Btc, Block, Transaction, TransOutput
 from verify import Verify
 from .network_routing import NetworkRouting
-from .blockchain import FullBlockChain
+from .fullblockchain import FullBlockChain
 
 
 __all__ = ["Miner", ]
