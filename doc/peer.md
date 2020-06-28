@@ -32,15 +32,15 @@ W - 钱包	M - 矿工	B - 完整的区块链数据库	N - 网络路由
 >
 > B-PUT--{block的序列信息}								# 添加新块，然后广播
 >
-> B-GET-UTXO-[多个地址的序列信息]				# 返回这些地址的多个utxo 
+> *B-GET-UTXO-[多个地址的序列信息]				# 返回这些地址的多个utxo 
 >
-> B-GET-BALANCE-[多个地址的序列信息]			# 返回这些地址的余额
+> *B-GET-BALANCE-[多个地址的序列信息]			# 返回这些地址的余额
 >
-> B-GET-HASH-														# 返回区块链的hash值
+> *B-GET-HASH-														# 返回区块链的hash值
 >
-> B-GET-HEIGHT-													# 返回区块链的高度
+> *B-GET-HEIGHT-													# 返回区块链的高度
 >
-> B-GET-BLOCK-{block的index}							# 返回指定索引位置的区块
+> *B-GET-BLOCK-{block的index}							# 返回指定索引位置的区块
 
 ## W
 
@@ -50,9 +50,11 @@ W - 钱包	M - 矿工	B - 完整的区块链数据库	N - 网络路由
 
 > M-PUT-{transaction的序列信息}					# 添加交易，广播交易
 >
-> M-PUT-{block的序列信息}								# 暂停挖矿，开始新一轮挖矿
+> *M-PUT-{block的序列信息}								# 暂停挖矿，开始新一轮挖矿
 >
-> M-GET-STOP														# 停止挖矿
+> *M-GET-STOP														# 停止挖矿
+>
+> *M-RESPONSE--{}
 
 
 

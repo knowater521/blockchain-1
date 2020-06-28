@@ -9,7 +9,7 @@ __all__ = ["Btc", ]
 
 class Btc:
     def __init__(self, value: str="0") -> None:
-        value = self.__format_value(value)
+        # value = self.__format_value(value)
         self.value = round(Decimal(value), MIN_PRECISION_BTC)    # 四舍五入
 
     @staticmethod

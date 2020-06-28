@@ -60,8 +60,9 @@ class Wallet:
 
     def pay(self, pay_to: Dict[str, Btc]) -> Transaction:
         """向一个或多个地址付钱（生成一笔交易）"""
-        pay_sum = sum(pay_to.values())                          # 计算总的要付的钱
-        pay_sum = Btc(str(pay_sum))
+        pay_sum = Btc("0")
+        for value in pay_to.values():                          # 计算总的要付的钱
+            pay_sum += value
         if self.lookup_balance() < pay_sum + self.trans_fee:    # 如果钱不够
             raise RuntimeError("number of btc is not enough!")
         # self.__sort_balance()
@@ -93,8 +94,3 @@ class Wallet:
         user_key = UserKey()
         self.add_key(user_key)
         return user_key.get_address()
-
-
-if __name__ == "__main__":
-    wallet = Wallet()
-    wallet.add_key(UserKey())

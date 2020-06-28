@@ -30,17 +30,17 @@ class Miner:
     @contextmanager
     def __safe_occupy(self):
         """安全使用（独占）"""
-        self.condition.acquire()
+        self.use_cond.acquire()
         with self.lock:
-            self.trans_cond -= 1
-        if self.trans_cond < 0:
-            self.condition.wait()
+            self.use_num -= 1
+        if self.use_num < 0:
+            self.use_cond.wait()
         yield
         with self.lock:
-            self.trans_cond += 1
-        if self.trans_cond < 1:
-            self.condition.notify(1)
-        self.condition.release()
+            self.use_num += 1
+        if self.use_num < 1:
+            self.use_cond.notify(1)
+        self.use_cond.release()
 
     @contextmanager
     def __safe_consum(self):
@@ -52,6 +52,10 @@ class Miner:
             self.consum_cond.wait()
         yield
         self.consum_cond.release()
+
+    def set_wallet_address(self, address: str) -> None:
+        """设置miner的收益地址"""
+        self.address = address
 
     def add_trans(self, *transes: Transaction) -> bool:
         """往交易池中添加交易（先验证）""" 

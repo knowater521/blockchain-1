@@ -1,7 +1,7 @@
 """配置文件"""
 # 底层区块链结构的配置
 FIREST_BLOCK_PREHASH = "0" * 64         # 第一个区块的pre_hash的值，r"[0-9a-f]{64}"
-MAX_USER_TRANSACTION_NUMBER = 10        # 一个区块的用户交易最大数量，不包括创币交易
+MAX_USER_TRANSACTION_NUMBER = 1        # 一个区块的用户交易最大数量，不包括创币交易
 MIN_USER_TRANSACTION_NUMBER = 1         # 一个区块的用户交易最小数量
 MIN_PRECISION_BTC = 8                   # btc的最小精度（小数点后8位）
 
