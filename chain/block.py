@@ -16,7 +16,7 @@ import time
 from hashlib import sha256
 from typing import Any, List
 
-from config import HEAD_HASH, MINING_ADD_NUM, FIREST_BLOCK_PREHASH, MINING_BTCS, REDUCE_BTCS_HEIGHT
+from config import HEAD_HASH, FIREST_BLOCK_PREHASH, MINING_BTCS, REDUCE_BTCS_HEIGHT
 from .btc import Btc
 from .trans_input import TransInput
 from .trans_output import TransOutput
@@ -131,12 +131,6 @@ class Block:
     def veri_hash(self) -> bool:
         """验证区块hash值的合法性"""
         return self.get_hash().startswith(HEAD_HASH)
-
-    def find_randnum(self) -> None:
-        """寻找randnum，设定timestap"""
-        while not self.veri_hash():
-            self.randnum += MINING_ADD_NUM
-            self.timestap = time.time()
 
     def keys(self) -> List[str]:
         return [

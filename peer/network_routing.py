@@ -1,9 +1,10 @@
-"""网络路由"""
+"""网络路由N"""
 from typing import Set, Tuple, List, Dict, Any
 from socket import socket, AF_INET, SOCK_STREAM
-from threading import Thread
+from threading import Thread, Condition, Lock
 from queue import Queue
 from collections import defaultdict
+from contextlib import contextmanager
 
 from config import NETWORK_ROUTING_PORT, NETWORK_ROUTING_ADDRESS, NETWORK_ROUTING_SERVER_NUM, NETWORK_TIMEOUT_SECS
 
@@ -16,14 +17,14 @@ class NetworkRouting:
 
     def __init__(self) -> None:
         self.nodes: Set[Node] = set()        # 本机连接的节点 {("127.0.0.1", 3347), }
+        self.nodes.add(Node("localhost", NETWORK_ROUTING_PORT)) # 必然包括本机
         self.blacklist: Set[Node] = set()    # 黑名单（拒绝这些节点的连接）
         self.server_flag = True
         self.recv_msgs: Dict[str, Queue] = defaultdict(Queue)  # 接收消息队列，不同的消息对应不同的队列
         self.send_msgs: Queue[str] = Queue()    # 发送消息队列
-    
+
     @classmethod
     def get_instance(cls) -> "NetworkRouting":
-        """单例模式设计，全局唯一"""
         if cls.__instance is None:
             cls.__instance = cls()
         return cls.__instance
@@ -34,8 +35,9 @@ class NetworkRouting:
 
     def add_a_msg(self, msg: Any) -> None:
         """发送一个消息给"""
-        msg_head = type(msg).__name__       # 使用类名作为消息头
-        self.send_msgs.put(msg_head + "-" + str(msg))
+        if msg:
+            msg_head = type(msg).__name__       # 使用类名作为消息头
+            self.send_msgs.put(msg_head + "-" + str(msg))
 
     def get_nodes(self) -> List[str]:
         """拿到所有节点"""
@@ -100,7 +102,7 @@ class NetworkRouting:
     def close_server(self) -> None:
         """关闭服务"""
         self.server_flag = False
-        Node("localhost", NETWORK_ROUTING_PORT).send_info("")
+        self.add_a_msg(" ")
 
 
 class Node:
