@@ -15,7 +15,7 @@ class TransInput:
     
     @classmethod
     def load_input(cls, trans_input: str) -> "TransInput":
-        tap = trans_input.split("-")
+        tap = trans_input.split(":")
         return cls(int(tap[0]), int(tap[1]), int(tap[2]))
 
     def keys(self) -> List[str]:
@@ -33,7 +33,7 @@ class TransInput:
 
     def __str__(self) -> str:
         """block-trans-output"""
-        return f"{self.block}-{self.trans}-{self.output}"
+        return f"{self.block}:{self.trans}:{self.output}"
 
     def __eq__(self, other) -> bool:
         return str(self) == str(other)

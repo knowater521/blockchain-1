@@ -16,7 +16,7 @@ class TransOutput:
     
     @classmethod
     def load_output(cls, trans_output: str) -> "TransOutput":
-        tap = trans_output.split("-")
+        tap = trans_output.split(":")
         return cls(Btc(tap[0]), tap[1])
 
     def keys(self) -> List[str]:
@@ -29,11 +29,8 @@ class TransOutput:
         return getattr(self, key)
     
     def __str__(self) -> str:
-        """btcs-address"""
-        tap = str(self.btcs).strip("0")
-        if tap:
-            tap = "0"
-        return f"{tap}-{self.address}"
+        """btcs:address"""
+        return f"{self.btcs}:{self.address}"
     
     def __hash__(self) -> int:
         return hash(str(self))

@@ -109,7 +109,7 @@ class BlockChain:
             for inp in trans.get_inputs():                  # 移除已使用utxo
                 self.utxos.remove(str(inp))
             for j, oup in enumerate(trans.get_outputs()):   # 添加新产生的utxo
-                tap = f"{self.get_height()}-{i + 1}-{j + 1}"
+                tap = f"{self.get_height()}:{i + 1}:{j + 1}"
                 self.utxos.add(tap)
         self.compute_hash()
 
@@ -119,14 +119,14 @@ class BlockChain:
     
     def verify_utxo(self, block: int, trans: int, output: int) -> bool:
         """验证某个输出是否未被消费"""
-        tap = f"{block}-{trans}-{output}"
+        tap = f"{block}:{trans}:{output}"
         return tap in self.utxos
 
     def get_utxo(self, *address: str) -> Dict[str, TransOutput]:
         """查找一个或多个地址的所有utxo"""
         result = {}
         for utxo in self.utxos:
-            block, trans, output = utxo.split("-")
+            block, trans, output = utxo.split(":")
             outp = self.get_output(int(block), int(trans), int(output))
             if outp.address in address:
                 result[utxo] = outp

@@ -8,7 +8,7 @@ from threading import Thread
 from config import NETWORK_ROUTING_PORT
 from chain import Btc, TransOutput, Block, BlockChain, Transaction
 from verify import Verify
-from peer.network_routing import Node, Message, B_mailbox
+from .network_routing import Node, Message, B_mailbox
 
 
 __all__ = ["FullBlockChain", ]

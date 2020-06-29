@@ -85,7 +85,7 @@ class Btc:
         return hash(str(self))
 
     def __str__(self) -> str:
-        return self.__format_value(str(self.value))
+        return str(self.value)
     
     def __repr__(self) -> str:
         return str(self)

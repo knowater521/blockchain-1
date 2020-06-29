@@ -15,6 +15,7 @@ if __name__ == "__main__":
     M = Miner()
     M.start_server()
     W = Wallet()
+    W.set_trans_fee(Btc("2"))
     keys = [UserKey() for i in range(10)]
     for key in keys:
         W.add_key(key)
@@ -34,8 +35,9 @@ if __name__ == "__main__":
     W.sync_balance()
     trans = W.pay({keys[1].get_address(): Btc("30")})
     M.add_trans(trans)
-
-    sleep(4)
+    
+    sleep(8)
+    print(BlockChain.get_instance().get_height())
 
 
 

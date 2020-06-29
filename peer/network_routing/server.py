@@ -69,6 +69,7 @@ class N_server:
     def start_postman_server(cls) -> None:
         cls.__postman_server_flag = True
         def run():
+            """邮递员线程"""
             while cls.__postman_server_flag:
                 node, msg = cls.__recv_msg_queue.get()
                 if msg.recieve in POST_OPTION.keys():

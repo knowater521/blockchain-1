@@ -4,11 +4,11 @@ from typing import Set, List, Optional
 from threading import Thread, Condition, Lock
 from contextlib import contextmanager
 
-from config import MAX_USER_TRANSACTION_NUMBER, MINING_ADD_NUM
+from config import MAX_USER_TRANSACTION_NUMBER, MINING_ADD_NUM, NETWORK_ROUTING_PORT
 from chain import Btc, Block, Transaction, TransOutput
 from verify import Verify
-from peer.network_routing import NetworkRouting, B_mailbox, Message
-from peer.fullblockchain import FullBlockChain
+from .network_routing import NetworkRouting, B_mailbox, Message, Node
+from .fullblockchain import FullBlockChain
 
 
 __all__ = ["Miner", ]
@@ -67,7 +67,9 @@ class Miner:
                     with self.lock:
                         self.consum_num += 1
                     if self.consum_num < 1:     # 如果有因get而阻塞的线程，则唤醒
+                        self.consum_cond.acquire()
                         self.consum_cond.notify(1)
+                        self.consum_cond.release()
                     result = True
         return result
 
