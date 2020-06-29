@@ -8,12 +8,12 @@ __all__ = ["Message", ]
 
 RECIEVES = ["W", "N", "M", "B", "*"]
 TYPE = ["GET", "PUT", "RESPONSE", "NONE"]
-COMMAND = [""]
+COMMAND = ["TRANS", "BLOCK", ""]
 STATE = [200, 404]
 
 
 class Message:
-    def __init__(self, recieve=RECIEVES[-1], type_=TYPE[-1], command=COMMAND[-1], data="") -> None:
+    def __init__(self, recieve=RECIEVES[-1], type_=TYPE[-1], command=COMMAND[-1], data=COMMAND[-1]) -> None:
         self.recieve = recieve      # 接收者，消息会被上传到节点的哪一部分功能
         self.type = type_           # 类型
         self.command = command      # 消息的额外指令

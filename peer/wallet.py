@@ -5,6 +5,7 @@ from collections import defaultdict
 from key import UserKey
 from chain import Btc, TransInput, TransOutput, Transaction
 from .fullblockchain import FullBlockChain
+from .network_routing import Message, NetworkRouting
 
 
 __all__ = ["Wallet", ]
@@ -12,15 +13,16 @@ __all__ = ["Wallet", ]
 
 class Wallet:
     """管理钱包"""
-    def __init__(self) -> None:
+    def __init__(self, trans_fee: Btc=Btc("0")) -> None:
         self.user_keys: Set[str] = set()                    # 存储用户的密钥
-        self.trans_fee = Btc("0")                           # 预设的交易费
+        self.trans_fee = trans_fee                          # 预设的交易费
         self.balance: Dict[str, Btc] = defaultdict(Btc)     # 已知的地址对应的余额（缓存）
         self.utxos: Dict[str, TransOutput] = {}             # 可使用的utxo集
 
-    def add_key(self, key: UserKey) -> None:
+    def add_key(self, *keys: UserKey) -> None:
         """添加密钥"""
-        self.user_keys.add(str(key))
+        for key in keys:
+            self.user_keys.add(str(key))
     
     def set_trans_fee(self, fee: Btc) -> None:
         """设定交易费"""
@@ -89,6 +91,10 @@ class Wallet:
             t.sign_transaction(tap_key)
         return t
     
+    def broad_a_trans(self, trans: Transaction) -> None:
+        msg = Message(recieve="M", type_="PUT", command="TRANS", data=str(trans))
+        NetworkRouting.get_instance().broad_a_msg(msg)
+
     def collect(self) -> str:
         """收钱（返回一个地址）"""
         user_key = UserKey()

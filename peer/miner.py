@@ -7,7 +7,7 @@ from contextlib import contextmanager
 from config import MAX_USER_TRANSACTION_NUMBER, MINING_ADD_NUM, NETWORK_ROUTING_PORT
 from chain import Btc, Block, Transaction, TransOutput
 from verify import Verify
-from .network_routing import NetworkRouting, B_mailbox, Message, Node
+from .network_routing import NetworkRouting, M_mailbox, Message, Node
 from .fullblockchain import FullBlockChain
 
 
@@ -15,6 +15,8 @@ __all__ = ["Miner", ]
 
 
 class Miner:
+    __instance = None
+
     def __init__(self) -> None:
         self.trans_cache: Set[Transaction] = set()      # 交易池
         self.trans_num = MAX_USER_TRANSACTION_NUMBER    # 一个区块打包多少个交易
@@ -26,6 +28,12 @@ class Miner:
         self.consum_cond = Condition()  # 消费等待队列
         self.consum_num = 0             # 消费需求的信号量
         self.lock = Lock()
+
+    @classmethod
+    def get_instance(cls) -> "Miner":
+        if cls.__instance is None:
+            cls.__instance = cls()
+        return cls.__instance
 
     @contextmanager
     def __safe_occupy(self):
@@ -133,19 +141,26 @@ class Miner:
         def recv_broad_transaction():
             """接收交易、广播交易的进程"""
             while self.server_flag:     # 阻塞在取trans的地方
-                node, msg = B_mailbox.get()
-                trans = Transaction.load_trans(msg.data)
-                if self.add_trans(trans):
-                    to_msg = Message(recieve="N", type_="PUT", data=str(msg))   # 广播交易
-                    Node("localhost", NETWORK_ROUTING_PORT).send_msg(to_msg)
+                node, msg = M_mailbox.get()
+                if msg.type == "PUT":
+                    if msg.command == "TRANS":
+                        trans = Transaction.load_trans(msg.data)
+                        if self.add_trans(trans):
+                            NetworkRouting.get_instance().broad_a_msg(msg)    # 广播交易
+                    elif msg.command == "BLOCK":  # 其它进程先挖到，暂停挖矿
+                        block = Block.load_block(msg.data)
+                        if Verify.verify_new_block(block) or FullBlockChain.get_instance().get_top_hash() == block.get_hash():
+                            self.accept_block(block)
         def mining_broad_block():
             """挖矿、广播新块的进程"""
             self.mine_flag = True
             while self.server_flag and self.mine_flag:
                 block = self.__mining()
                 if block is not None:
-                    msg = Message(recieve="B", type_="PUT", data=str(block))
-                    Node("localhost", NETWORK_ROUTING_PORT).send_msg(msg)
+                    msg = Message(recieve="B", type_="PUT",command="BLOCK", data=str(block))
+                    NetworkRouting.get_instance().broad_a_msg(msg)
+                    msg = Message(recieve="M", type_="PUT",command="BLOCK", data=str(block))
+                    NetworkRouting.get_instance().broad_a_msg(msg)
         recv_thread = Thread(target=recv_broad_transaction, name="Miner recv_broad_transaction Thread", daemon=True)
         recv_thread.start()
         mining_thread = Thread(target=mining_broad_block, name="Miner mining_broad_block Thread", daemon=True)

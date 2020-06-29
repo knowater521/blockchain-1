@@ -2,24 +2,19 @@ from time import sleep
 
 from key import UserKey
 from chain import BlockChain, Block, Transaction, TransOutput, Btc
-from peer.network_routing import NetworkRouting
-from peer.fullblockchain import FullBlockChain
-from peer.miner import Miner
-from peer.wallet import Wallet
+from peer import NetworkRouting, FullBlockChain, Miner, Wallet
 from config import NETWORK_ROUTING_PORT, MINING_BTCS
 
 
 if __name__ == "__main__":
     NetworkRouting.get_instance().start_server()
     FullBlockChain.get_instance().start_server()
-    M = Miner()
-    M.start_server()
-    W = Wallet()
-    W.set_trans_fee(Btc("2"))
+    Miner.get_instance().start_server()
+    W = Wallet(Btc("2"))
     keys = [UserKey() for i in range(10)]
     for key in keys:
         W.add_key(key)
-    M.set_wallet_address(keys[0].get_address())
+    Miner.get_instance().set_wallet_address(keys[0].get_address())
     sleep(2)
 
     t = Transaction()
@@ -34,7 +29,7 @@ if __name__ == "__main__":
     BlockChain.get_instance().add_block(block)
     W.sync_balance()
     trans = W.pay({keys[1].get_address(): Btc("30")})
-    M.add_trans(trans)
+    W.broad_a_trans(trans)
     
     sleep(8)
     print(BlockChain.get_instance().get_height())

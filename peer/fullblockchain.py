@@ -8,7 +8,7 @@ from threading import Thread
 from config import NETWORK_ROUTING_PORT
 from chain import Btc, TransOutput, Block, BlockChain, Transaction
 from verify import Verify
-from .network_routing import Node, Message, B_mailbox
+from .network_routing import Node, Message, B_mailbox, NetworkRouting
 
 
 __all__ = ["FullBlockChain", ]
@@ -80,12 +80,13 @@ class FullBlockChain:
         """启动B服务"""
         self.server_flag = True
         def run():
+            """接收区块，广播区块线程"""
             node, msg = B_mailbox.get()
-            if msg.type == "PUT":   # 添加新块，广播新块
-                block = Block.load_block(msg.data)
-                if self.add_new_block(block):
-                    b_msg = Message(recieve="N", type_="PUT", data=str(msg))
-                    Node("localhost", NETWORK_ROUTING_PORT).send_msg(b_msg)
+            if msg.type == "PUT":   
+                if msg.command == "BLOCK":      # 添加新块，广播新块
+                    block = Block.load_block(msg.data)
+                    if self.add_new_block(block):
+                        NetworkRouting.get_instance().broad_a_msg(msg)
             elif msg.type == "GET":
                 pass    # TODO
         thread = Thread(target=run, daemon=True, name="-B server thread-")
