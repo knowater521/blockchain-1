@@ -14,27 +14,35 @@ __all__ = ["Wallet", ]
 
 
 class Wallet:
+    __instance = None
+
     """管理钱包"""
     def __init__(self, trans_fee: Btc=Btc("0")) -> None:
         self.user_keys: Set[str] = set()                    # 存储用户的密钥
         self.trans_fee = trans_fee                          # 预设的交易费
         self.balance: Dict[str, Btc] = defaultdict(Btc)     # 已知的地址对应的余额（缓存）
         self.utxos: Dict[str, TransOutput] = {}             # 可使用的utxo集
-        self.__import_keys_from_file()
-                
-    def __del__(self) -> None:
-        self.__write_keys_to_file()
+        self.import_keys_from_file(STORE_KEYS_FILE_PATH)
 
-    def __import_keys_from_file(self) -> None:
+    def __del__(self) -> None:
+        self.write_keys_to_file()
+
+    @classmethod
+    def get_instance(cls) -> "Wallet":
+        if cls.__instance is None:
+            cls.__instance = cls()
+        return cls.__instance
+
+    def import_keys_from_file(self, keys_path: str) -> None:
         """从特定位置导入本地秘钥"""
-        if os.path.isfile(STORE_KEYS_FILE_PATH):
-            with open(STORE_KEYS_FILE_PATH, "r", encoding="utf-8") as f:
+        if os.path.isfile(keys_path):
+            with open(keys_path, "r", encoding="utf-8") as f:
                 for line in f.readlines():
                     if line.strip():
                         user_key = UserKey.load(line.strip())
                         self.add_key(user_key)
 
-    def __write_keys_to_file(self) -> None:
+    def write_keys_to_file(self) -> None:
         """把秘钥持久存储"""
         with open(STORE_KEYS_FILE_PATH, "w", encoding="utf-8") as f:
             for user_key in self.user_keys:
