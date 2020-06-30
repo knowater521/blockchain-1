@@ -32,6 +32,9 @@ from .trans_output import TransOutput
 __all__ = ["Transaction", ]
 
 
+_SPLIT_STR = ":"     # 用于分隔的字符串
+
+
 class Transaction:
     """管理单个交易的类"""
     def __init__(self) -> None:
@@ -42,16 +45,16 @@ class Transaction:
         self.signed = ""         # 签名
     
     @classmethod
-    def load_trans(cls, trans: str) -> "Transaction":
+    def load(cls, trans: str) -> "Transaction":
         """根据json数据获得一个trans"""
         result = cls()
         trans_dict = json.loads(trans)
         input_list = trans_dict.get("inputs", [])
         for trans_input in input_list:
-            result.inputs.append(TransInput.load_input(trans_input))
+            result.inputs.append(TransInput.load(trans_input))
         output_list = trans_dict.get("outputs", [])
         for trans_output in output_list:
-            result.outputs.append(TransOutput.load_output(trans_output))
+            result.outputs.append(TransOutput.load(trans_output))
         result.pub_hex = trans_dict.get("pub_hex", result.pub_hex)
         result.signed = trans_dict.get("signed", result.signed)
         return result
@@ -62,7 +65,7 @@ class Transaction:
     
     def get_signeds(self) -> List[str]:
         """获取交易中的全部签名"""
-        return self.signed.split("-")
+        return self.signed.split(_SPLIT_STR)
 
     def get_input(self, input: int) -> TransInput:
         """获取第input个输入"""
@@ -111,8 +114,8 @@ class Transaction:
             self.pub_hex = pub
             self.signed = signed
         else:                       # 签过了，则多重签
-            self.pub_hex += "-" + pub
-            self.signed += "-" + signed
+            self.pub_hex += _SPLIT_STR + pub
+            self.signed += _SPLIT_STR + signed
 
     def verify_transaction(self) -> bool:
         """用公钥验证交易"""
@@ -169,7 +172,7 @@ if __name__ == "__main__":
     trans.sign_transaction(key3)
     print(str(trans))
     print(trans.to_string_without_sign())
-    trans2 = Transaction.load_trans(str(trans))
+    trans2 = Transaction.load(str(trans))
     print(trans2 == trans)
     print(trans2.verify_transaction())
     print(str(trans2) == str(trans))

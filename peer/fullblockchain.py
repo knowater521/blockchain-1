@@ -41,7 +41,7 @@ class FullBlockChain:
     
     def lookup_balance(self, *address: str) -> Dict[str, Btc]:
         """查找一个或多个地址的余额"""
-        result = defaultdict(Btc)
+        result: Dict[str, Btc] = defaultdict(Btc)
         for outp in self.lookup_utxo(*address).values():
             result[outp.address] += outp.btcs
         return result
@@ -84,7 +84,7 @@ class FullBlockChain:
             node, msg = B_mailbox.get()
             if msg.type == "PUT":   
                 if msg.command == "BLOCK":      # 添加新块，广播新块
-                    block = Block.load_block(msg.data)
+                    block = Block.load(msg.data)
                     if self.add_new_block(block):
                         NetworkRouting.get_instance().broad_a_msg(msg)
             elif msg.type == "GET":

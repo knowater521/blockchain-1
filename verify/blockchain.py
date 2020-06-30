@@ -1,5 +1,6 @@
 """验证区块链的合法性"""
 import time
+from typing import List
 
 from chain import BlockChain
 from config import FIREST_BLOCK_PREHASH
@@ -44,4 +45,4 @@ class TimestapBlockChain(BaseBlockChainVerify):
         return True
 
 
-BlockChainVerify = [OrderBlockChain, TimestapBlockChain]
+BlockChainVerify: List[type] = [OrderBlockChain, TimestapBlockChain]

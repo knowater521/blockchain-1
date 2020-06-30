@@ -1,4 +1,6 @@
 """验证区块的合法性"""
+from typing import List
+
 from chain import Block
 from config import MAX_USER_TRANSACTION_NUMBER, MIN_USER_TRANSACTION_NUMBER
 from .base import BaseBlockVerify
@@ -29,4 +31,4 @@ class FormatBlock(BaseBlockVerify):
         return True
 
 
-BlockVerify = [HashBlock, FormatBlock]
+BlockVerify: List[type] = [HashBlock, FormatBlock]

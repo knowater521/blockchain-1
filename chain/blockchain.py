@@ -13,6 +13,9 @@ from .block import Block
 __all__ = ["BlockChain", ]
 
 
+_SPLIT_STR = ":"     # 用于分隔的字符串
+
+
 class BlockChain:
     """管理区块链的数据结构"""
     __instance = None
@@ -109,7 +112,7 @@ class BlockChain:
             for inp in trans.get_inputs():                  # 移除已使用utxo
                 self.utxos.remove(str(inp))
             for j, oup in enumerate(trans.get_outputs()):   # 添加新产生的utxo
-                tap = f"{self.get_height()}:{i + 1}:{j + 1}"
+                tap = f"{self.get_height()}{_SPLIT_STR}{i + 1}{_SPLIT_STR}{j + 1}"
                 self.utxos.add(tap)
         self.compute_hash()
 
@@ -119,14 +122,14 @@ class BlockChain:
     
     def verify_utxo(self, block: int, trans: int, output: int) -> bool:
         """验证某个输出是否未被消费"""
-        tap = f"{block}:{trans}:{output}"
+        tap = f"{block}{_SPLIT_STR}{trans}{_SPLIT_STR}{output}"
         return tap in self.utxos
 
     def get_utxo(self, *address: str) -> Dict[str, TransOutput]:
         """查找一个或多个地址的所有utxo"""
         result = {}
         for utxo in self.utxos:
-            block, trans, output = utxo.split(":")
+            block, trans, output = utxo.split(_SPLIT_STR)
             outp = self.get_output(int(block), int(trans), int(output))
             if outp.address in address:
                 result[utxo] = outp

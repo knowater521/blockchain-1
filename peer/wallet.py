@@ -31,14 +31,14 @@ class Wallet:
     def get_key(self, address: str) -> Optional[UserKey]:
         """根据地址取出密钥"""
         for key in self.user_keys:
-            user_key = UserKey.load_userkey(key)
+            user_key = UserKey.load(key)
             if address == user_key.get_address():
                 return user_key
         return None
 
     def get_keys(self) -> List[UserKey]:
         """取出所有密钥"""
-        return [UserKey.load_userkey(key) for key in self.user_keys]
+        return [UserKey.load(key) for key in self.user_keys]
 
     def remove_key(self, address: str) -> None:
         """根据地址移除密钥"""
@@ -76,7 +76,7 @@ class Wallet:
         for inp, outp in self.utxos.items():                    # 添加交易输入
             address_set.add(outp.address)
             pay_actually += outp.btcs
-            t.add_input(TransInput.load_input(inp))
+            t.add_input(TransInput.load(inp))
             if pay_actually >= pay_sum + self.trans_fee:
                 break
         pay_change = pay_actually - (pay_sum + self.trans_fee)  # 添加找零

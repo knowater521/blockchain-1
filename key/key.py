@@ -7,6 +7,9 @@ from typing import Optional, Tuple
 __all__ = ["UserKey", ]
 
 
+_SPLIT_STR = ":"     # 用于分隔的字符串
+
+
 class UserKey:
     """密钥类，用于管理公钥和私钥"""
     def __init__(self, pub_hex: str="", pri_hex: str="") -> None:
@@ -20,9 +23,9 @@ class UserKey:
             self.pub_key, self.pri_key = rsa.newkeys(512)
 
     @classmethod
-    def load_userkey(cls, all_hex: str) -> "UserKey":
+    def load(cls, all_hex: str) -> "UserKey":
         """从字符串中导出key"""
-        pub_hex, pri_hex = all_hex.split("-")
+        pub_hex, pri_hex = all_hex.split(_SPLIT_STR)
         return cls(pub_hex, pri_hex)
 
     @staticmethod
@@ -96,7 +99,7 @@ class UserKey:
         return self.get_key_hex() != other.get_key_hex()
     
     def __str__(self) -> str:
-        return f"{self.get_pub_hex()}-{self.get_pri_hex()}"
+        return f"{self.get_pub_hex()}{_SPLIT_STR}{self.get_pri_hex()}"
 
 
 if __name__ == "__main__":

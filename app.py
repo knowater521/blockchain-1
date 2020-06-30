@@ -25,7 +25,7 @@ if __name__ == "__main__":
     head_trans = Transaction()
     head_trans.add_output(TransOutput(Btc(MINING_BTCS), keys[0].get_address()))
     block.set_head_transaction(head_trans)
-    block.find_num()
+    block.find_randnum()
     BlockChain.get_instance().add_block(block)
     W.sync_balance()
     trans = W.pay({keys[1].get_address(): Btc("30")})

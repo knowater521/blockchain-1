@@ -5,6 +5,9 @@ from typing import List
 __all__ = ["TransInput", ]
 
 
+_SPLIT_STR = ":"     # 用于分隔的字符串
+
+
 class TransInput:
     """交易输入"""
     def __init__(self, block: int=0, trans: int=0, output: int=0) -> None:
@@ -14,8 +17,8 @@ class TransInput:
         self.output = output
     
     @classmethod
-    def load_input(cls, trans_input: str) -> "TransInput":
-        tap = trans_input.split(":")
+    def load(cls, trans_input: str) -> "TransInput":
+        tap = trans_input.split(_SPLIT_STR)
         return cls(int(tap[0]), int(tap[1]), int(tap[2]))
 
     def keys(self) -> List[str]:
@@ -33,7 +36,7 @@ class TransInput:
 
     def __str__(self) -> str:
         """block-trans-output"""
-        return f"{self.block}:{self.trans}:{self.output}"
+        return f"{self.block}{_SPLIT_STR}{self.trans}{_SPLIT_STR}{self.output}"
 
     def __eq__(self, other) -> bool:
         return str(self) == str(other)

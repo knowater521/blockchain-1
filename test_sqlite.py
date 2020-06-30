@@ -1,5 +1,6 @@
 import sqlite3
 
+
 conn = sqlite3.connect("test.db")
 cus = conn.cursor()
 cus.execute("create table user(id varchar(20) primary key, name varchar(20))")

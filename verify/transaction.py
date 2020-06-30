@@ -1,5 +1,6 @@
 """验证用户交易合法性"""
 import re
+from typing import List
 
 from chain import Btc, Transaction, BlockChain
 from .base import BaseTransVerify
@@ -76,4 +77,4 @@ class AmountTrans(BaseTransVerify):
         return blc.compute_transaction_fee(self.trans) > Btc("0")
 
 
-TransVerify = [InpOutpTrans, FormatTrans, SignedTrans, AmountTrans]
+TransVerify: List[type] = [InpOutpTrans, FormatTrans, SignedTrans, AmountTrans]

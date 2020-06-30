@@ -144,11 +144,11 @@ class Miner:
                 node, msg = M_mailbox.get()
                 if msg.type == "PUT":
                     if msg.command == "TRANS":
-                        trans = Transaction.load_trans(msg.data)
+                        trans = Transaction.load(msg.data)
                         if self.add_trans(trans):
                             NetworkRouting.get_instance().broad_a_msg(msg)    # 广播交易
                     elif msg.command == "BLOCK":  # 其它进程先挖到，暂停挖矿
-                        block = Block.load_block(msg.data)
+                        block = Block.load(msg.data)
                         if Verify.verify_new_block(block) or FullBlockChain.get_instance().get_top_hash() == block.get_hash():
                             self.accept_block(block)
         def mining_broad_block():

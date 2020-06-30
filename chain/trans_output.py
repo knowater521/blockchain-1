@@ -7,6 +7,9 @@ from .btc import Btc
 __all__ = ["TransOutput", ]
 
 
+_SPLIT_STR = ":"     # 用于分隔的字符串
+
+
 class TransOutput:
     """交易输出"""
     def __init__(self, btcs: Btc=Btc("0"), address: str="") -> None:
@@ -15,8 +18,8 @@ class TransOutput:
         self.address = address
     
     @classmethod
-    def load_output(cls, trans_output: str) -> "TransOutput":
-        tap = trans_output.split(":")
+    def load(cls, trans_output: str) -> "TransOutput":
+        tap = trans_output.split(_SPLIT_STR)
         return cls(Btc(tap[0]), tap[1])
 
     def keys(self) -> List[str]:
@@ -30,7 +33,7 @@ class TransOutput:
     
     def __str__(self) -> str:
         """btcs:address"""
-        return f"{self.btcs}:{self.address}"
+        return f"{self.btcs}{_SPLIT_STR}{self.address}"
     
     def __hash__(self) -> int:
         return hash(str(self))

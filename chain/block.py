@@ -38,7 +38,7 @@ class Block:
         self.head_trans = Transaction()                 # 第一笔交易（矿工奖励和交易费）
     
     @classmethod
-    def load_block(cls, block: str) -> "Block":
+    def load(cls, block: str) -> "Block":
         """根据json数据导入区块"""
         result = cls()
         block_dict = json.loads(block)
@@ -48,9 +48,9 @@ class Block:
         result.randnum = block_dict.get("randnum", result.randnum)
         trans_list = block_dict.get("transactions", [])    
         if trans_list:
-            result.set_head_transaction(Transaction.load_trans(trans_list[0]))
+            result.set_head_transaction(Transaction.load(trans_list[0]))
             for trans in trans_list[1:]:
-                t = Transaction.load_trans(trans)
+                t = Transaction.load(trans)
                 result.add_transaction(t)
         return result
 
@@ -128,7 +128,8 @@ class Block:
         tap = str(self).encode("utf-8")
         return sha256(tap).hexdigest()
 
-    def find_num(self) -> None:
+    def find_randnum(self) -> None:
+        """hash碰撞"""
         while not self.veri_hash():
             self.randnum += MINING_ADD_NUM
             self.timestap = time.time()
@@ -175,14 +176,14 @@ if __name__ == "__main__":
     trans.add_output(TransOutput(Btc("5.67"), "fsfwetewtette4654654"))
     key = UserKey()
     trans.sign_transaction(key)
-    trans2 = Transaction.load_trans(str(trans))
+    trans2 = Transaction.load(str(trans))
     trans2.add_input(TransInput(5, 6, 2))
     block = Block()
     block.add_transaction(trans)
     block.add_transaction(trans2)
     tap = str(block)
     print(tap)
-    block2 = Block.load_block(tap)
+    block2 = Block.load(tap)
     print(str(block2))
     print(str(block2) == str(block))
     block.find_randnum()
