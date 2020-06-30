@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>605</width>
-    <height>482</height>
+    <height>522</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -44,7 +44,7 @@ border: 10px double #242424;</string>
      </rect>
     </property>
     <property name="styleSheet">
-     <string notr="true">font: 25pt &quot;Adobe Arabic&quot;;</string>
+     <string notr="true">font: 24pt &quot;Adobe Arabic&quot;;</string>
     </property>
     <property name="text">
      <string>Btcs：</string>
@@ -56,14 +56,14 @@ border: 10px double #242424;</string>
    <widget class="QLabel" name="label_balance">
     <property name="geometry">
      <rect>
-      <x>130</x>
+      <x>120</x>
       <y>150</y>
-      <width>101</width>
+      <width>111</width>
       <height>61</height>
      </rect>
     </property>
     <property name="styleSheet">
-     <string notr="true">font: 25pt &quot;Adobe Arabic&quot;;</string>
+     <string notr="true">font: 20pt &quot;Times New Roman&quot;;</string>
     </property>
     <property name="text">
      <string>0</string>
@@ -112,12 +112,22 @@ border: 10px double #242424;</string>
     <property name="geometry">
      <rect>
       <x>310</x>
-      <y>150</y>
+      <y>160</y>
       <width>281</width>
-      <height>271</height>
+      <height>311</height>
      </rect>
     </property>
     <layout class="QVBoxLayout" name="verticalLayout">
+     <item>
+      <widget class="Line" name="line_4">
+       <property name="frameShadow">
+        <enum>QFrame::Plain</enum>
+       </property>
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+      </widget>
+     </item>
      <item>
       <layout class="QFormLayout" name="formLayout">
        <item row="0" column="0">
@@ -167,9 +177,25 @@ border: 10px double #242424;</string>
       </widget>
      </item>
      <item>
-      <widget class="QLabel" name="label_9">
-       <property name="text">
-        <string/>
+      <spacer name="verticalSpacer">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>20</width>
+         <height>40</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="Line" name="line_3">
+       <property name="frameShadow">
+        <enum>QFrame::Plain</enum>
+       </property>
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
        </property>
       </widget>
      </item>
@@ -196,9 +222,9 @@ border: 10px double #242424;</string>
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>250</y>
+      <y>290</y>
       <width>241</width>
-      <height>121</height>
+      <height>91</height>
      </rect>
     </property>
     <property name="styleSheet">
@@ -216,7 +242,7 @@ border: 10px double #242424;</string>
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>380</y>
+      <y>430</y>
       <width>221</width>
       <height>41</height>
      </rect>
@@ -234,7 +260,7 @@ border: 10px double #242424;</string>
       <x>270</x>
       <y>10</y>
       <width>20</width>
-      <height>411</height>
+      <height>461</height>
      </rect>
     </property>
     <property name="lineWidth">
@@ -248,7 +274,7 @@ border: 10px double #242424;</string>
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>220</y>
+      <y>260</y>
       <width>261</width>
       <height>20</height>
      </rect>
@@ -258,6 +284,72 @@ border: 10px double #242424;</string>
     </property>
     <property name="orientation">
      <enum>Qt::Horizontal</enum>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btn_export_key">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>220</y>
+      <width>111</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>导出密钥</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btn_import_key">
+    <property name="geometry">
+     <rect>
+      <x>140</x>
+      <y>220</y>
+      <width>111</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>导入密钥</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_3">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>390</y>
+      <width>161</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">font: 12pt &quot;仿宋&quot;;
+border: 3px solid #242424;</string>
+    </property>
+    <property name="text">
+     <string>当前区块高度：</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_block_height">
+    <property name="geometry">
+     <rect>
+      <x>170</x>
+      <y>390</y>
+      <width>81</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">font: 15pt &quot;Times New Roman&quot;;
+border: 3px solid #242424;</string>
+    </property>
+    <property name="text">
+     <string>0</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
     </property>
    </widget>
    <zorder>label_4</zorder>
@@ -270,6 +362,10 @@ border: 10px double #242424;</string>
    <zorder>btn_mining</zorder>
    <zorder>line</zorder>
    <zorder>line_2</zorder>
+   <zorder>btn_export_key</zorder>
+   <zorder>btn_import_key</zorder>
+   <zorder>label_3</zorder>
+   <zorder>label_block_height</zorder>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
