@@ -1,11 +1,12 @@
 """完整的区块链数据库B，必须有N以支持此功能"""
-from typing import Dict
+import sqlite3
+from typing import Dict, List
 from collections import defaultdict
 from contextlib import contextmanager
 from queue import Queue
 from threading import Thread
 
-from config import NETWORK_ROUTING_PORT
+from config import NETWORK_ROUTING_PORT, STORE_BLC_FILE_PATH
 from chain import Btc, TransOutput, Block, BlockChain, Transaction
 from verify import Verify
 from .network_routing import Node, Message, B_mailbox, NetworkRouting
@@ -19,6 +20,7 @@ class FullBlockChain:
 
     """完整的账本，类似代理，确保同步"""
     def __init__(self) -> None:
+        self.sqlite_driver = BlockChainSqlite(STORE_BLC_FILE_PATH)
         self.server_flag = True
 
     @classmethod
@@ -31,6 +33,11 @@ class FullBlockChain:
     def __blc(self) -> BlockChain:
         return BlockChain.get_instance()
     
+    def __import_blc_from_db(self) -> None:
+        """从sqlite数据库导入区块链"""
+        for block in self.sqlite_driver.get_blocks():
+            BlockChain.get_instance().add_block(block)
+
     def set_blockchain(self, blc: BlockChain) -> None:
         """设定区块链数据库"""
         BlockChain.set_instance(blc)
@@ -70,6 +77,7 @@ class FullBlockChain:
         """添加新块（带验证），验证通过则广播"""
         if Verify.verify_new_block(block):
             self.__blc.add_block(block)
+            self.sqlite_driver.insert_block(block)
             msg = Message(recieve="B", type_="PUT", data=str(block))
             to_msg = Message(recieve="N", type_="PUT", data=str(msg))
             Node("localhost", NETWORK_ROUTING_PORT).send_msg(to_msg)  # 广播区块
@@ -93,3 +101,42 @@ class FullBlockChain:
         thread.start()
 
 
+class BlockChainSqlite:
+    """管理区块链sqlite数据库"""
+    def __init__(self, db_path: str) -> None:
+        self.db_path = db_path
+        self.__create_table()
+    
+    @contextmanager
+    def __auto_commit(self):
+        conn = sqlite3.connect(self.db_path)
+        cus = conn.cursor()
+        yield cus
+        cus.close()
+        conn.commit()
+        conn.close()
+
+    def __create_table(self) -> None:
+        """建表"""
+        with self.__auto_commit() as cusor:
+            fet = cusor.execute("select count(*)  from sqlite_master where type='table' and name = 'blockchain'")
+            if fet.fetchone()[0] <= 0:
+                cusor.execute("CREATE TABLE blockchain(\"index\" INTEGER NOT NULL primary key, block TEXT NOT NULL)")
+
+    def insert_block(self, block: Block) -> None:
+        """插入一个新块"""
+        with self.__auto_commit() as cusor:
+            cusor.execute(f"insert into blockchain values({block.get_index()}, '{str(block)}')")
+    
+    def get_block(self, index: int) -> Block:
+        """取出指定索引块"""
+        with self.__auto_commit() as cusor:
+            fet = cusor.execute(f"select block from blockchain where \"index\"={index}")
+            b = fet.fetchone()[0]
+            return Block.load(b)
+    
+    def get_blocks(self) -> List[Block]:
+        """取出所有块"""
+        with self.__auto_commit() as cusor:
+            fet = cusor.execute("select block from blockchain order by \"index\"")
+            return [Block.load(b[0]) for b in fet.fetchall()]

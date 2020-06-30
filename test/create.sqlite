@@ -1,0 +1,4 @@
+CREATE TABLE blockchain (
+	"index" INTEGER NOT NULL primary key,	/* 区块索引 */
+	block TEXT NOT NULL					/* 区块的str形式 */
+);

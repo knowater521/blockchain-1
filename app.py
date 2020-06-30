@@ -1,5 +1,7 @@
+import os
 from time import sleep
 
+from config import STORE_DIR
 from key import UserKey
 from chain import BlockChain, Block, Transaction, TransOutput, Btc
 from peer import NetworkRouting, FullBlockChain, Miner, Wallet
@@ -7,6 +9,8 @@ from config import NETWORK_ROUTING_PORT, MINING_BTCS
 
 
 if __name__ == "__main__":
+    if not os.path.isdir(STORE_DIR):
+        os.mkdir(STORE_DIR)
     NetworkRouting.get_instance().start_server()
     FullBlockChain.get_instance().start_server()
     Miner.get_instance().start_server()
