@@ -6,6 +6,7 @@
 .mypy_cache/
 .venv/
 __pycache__/
+files/
 
 # 其它文件
 ~*
