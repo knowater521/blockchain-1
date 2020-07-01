@@ -1,3 +1,4 @@
+import re
 import rsa
 from hashlib import sha256
 from base64 import b64encode, b64decode
@@ -68,6 +69,13 @@ class UserKey:
         pub_bytes = self.pub_key.save_pkcs1()
         addr = sha256(sha256(pub_bytes).digest()).hexdigest()
         return addr
+
+    @staticmethod
+    def is_address(address: str) -> bool:
+        if re.match(r"^[0-9a-f]{64}$", address):
+            return True
+        else:
+            return False
 
     def sign(self, info: str) -> str:
         """对info内容进行签名"""

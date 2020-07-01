@@ -3,7 +3,7 @@ import os
 from typing import Set, Optional, List, Dict
 from collections import defaultdict
 
-from config import STORE_KEYS_FILE_PATH
+from config import STORE_KEYS_FILE_PATH, DEFAULT_TRANS_FEE
 from key import UserKey
 from chain import Btc, TransInput, TransOutput, Transaction
 from .fullblockchain import FullBlockChain
@@ -17,15 +17,17 @@ class Wallet:
     __instance = None
 
     """管理钱包"""
-    def __init__(self, trans_fee: Btc=Btc("0")) -> None:
+    def __init__(self, trans_fee: Btc=Btc(DEFAULT_TRANS_FEE)) -> None:
         self.user_keys: Set[str] = set()                    # 存储用户的密钥
         self.trans_fee = trans_fee                          # 预设的交易费
         self.balance: Dict[str, Btc] = defaultdict(Btc)     # 已知的地址对应的余额（缓存）
         self.utxos: Dict[str, TransOutput] = {}             # 可使用的utxo集
         self.import_keys_from_file(STORE_KEYS_FILE_PATH)
+        self.keys_file = open(STORE_KEYS_FILE_PATH, "w", encoding="utf-8")
 
     def __del__(self) -> None:
         self.write_keys_to_file()
+        self.keys_file.close()
 
     @classmethod
     def get_instance(cls) -> "Wallet":
@@ -44,9 +46,8 @@ class Wallet:
 
     def write_keys_to_file(self) -> None:
         """把秘钥持久存储"""
-        with open(STORE_KEYS_FILE_PATH, "w", encoding="utf-8") as f:
-            for user_key in self.user_keys:
-                f.write(user_key + "\n")
+        for user_key in self.user_keys:
+            self.keys_file.write(user_key + "\n")
 
     def add_key(self, *keys: UserKey) -> None:
         """添加密钥"""
