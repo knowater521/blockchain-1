@@ -1,15 +1,32 @@
 import shutil
 import json
+import pyperclip
 from PyQt5.QtWidgets import QMainWindow, QFileDialog
 from PyQt5.QtCore import Qt
+from PyQt5.Qt import QObject
 from collections import defaultdict
-from typing import Dict
+from typing import Dict, List
 
 from config import STORE_KEYS_FILE_PATH
 from chain import Btc
 from key import UserKey
-from peer import Wallet, Miner, FullBlockChain
+from peer import Wallet, Miner, FullBlockChain, NetworkRouting
 from .win import Ui_MainWindow
+
+
+__all__ = ["MainWindow", ]
+
+
+class TimingEvent(QObject):
+    def __init__(self, caller) -> None:
+        super().__init__()
+        self.caller = caller
+
+    def set_caller(self, caller) -> None:
+        self.caller = caller
+
+    def timerEvent(self, _) -> None:
+        self.caller()
 
 
 class MainWindow(QMainWindow):
@@ -27,9 +44,33 @@ class MainWindow(QMainWindow):
         self.ui.btn_mining.clicked.connect(self.__mining_action)
         self.ui.btn_add_output.clicked.connect(self.__add_output)
         self.ui.btn_broad_trans.clicked.connect(self.__broad_trans)
+        self.ui.btn_payments.clicked.connect(self.__collect)
+        self.ui.btn_add_node.clicked.connect(self.__add_node)
         # 初始化面板
-        self.ui.label_balance.setText(str(Wallet.get_instance().lookup_balance()))
-        self.ui.label_block_height.setText(str(FullBlockChain.get_instance().get_height()))
+        node_list = NetworkRouting.get_instance().get_nodes()
+        self.ui.node_list.addItems(node_list)
+        self.nodelist_change = TimingEvent(lambda : NetworkRouting.get_instance().set_nodes(self.__get_node_list()))
+        self.nodelist_change.startTimer(2000)
+        self.balance_change = TimingEvent(lambda : self.ui.label_balance.setText(str(Wallet.get_instance().lookup_balance())))
+        self.balance_change.startTimer(2000)
+        self.height_change = TimingEvent(lambda : self.ui.label_block_height.setText(str(FullBlockChain.get_instance().get_height())))
+        self.height_change.startTimer(2000)
+
+    def __get_node_list(self) -> List[str]:
+        """获取所有node_list"""
+        tap = []
+        for i in range(self.ui.node_list.count()):
+            tap.append(self.ui.node_list.item(i).text().strip())
+        return tap
+
+    def __add_node(self) -> None:
+        """添加网络节点"""
+        self.ui.node_list.edit_new_item()
+
+    def __collect(self) -> None:
+        """收钱"""
+        pyperclip.copy(Wallet.get_instance().collect())
+        self.ui.pay_addr.setText("收钱地址已复制到剪贴板。。。")
 
     def __export_key(self) -> None:
         """导出秘钥"""

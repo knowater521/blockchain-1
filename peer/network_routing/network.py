@@ -36,9 +36,22 @@ class NetworkRouting:
         """拿到所有节点"""
         return [str(node) for node in self.nodes]
 
-    def add_node(self, node: str) -> None:
+    def set_nodes(self, node_list: List[str]) -> None:
+        """设定nodes"""
+        self.clear_nodes()
+        self.add_node(*node_list)
+
+    def clear_nodes(self) -> None:
+        """清空nodes"""
+        self.nodes.clear()
+
+    def add_node(self, *nodes: str) -> None:
         """增加新节点"""
-        self.nodes.add(Node.load(node))
+        for node in nodes:
+            try:
+                self.nodes.add(Node.load(node))
+            except Exception as e:
+                print(e)
     
     def remove_node(self, node: str) -> None:
         """移除节点"""

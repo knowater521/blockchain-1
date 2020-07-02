@@ -106,7 +106,7 @@ class BlockChain:
     def add_block(self, block: Block) -> None:
         """添加区块，并把区块中交易信息同步到utxo集中"""
         self.height += 1
-        block.set_index(self.height)
+        # block.set_index(self.height)
         self.blocks.append(block)
         for i, trans in enumerate(block.get_transactions()):
             for inp in trans.get_inputs():                  # 移除已使用utxo

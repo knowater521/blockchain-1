@@ -10,6 +10,7 @@ mypy = "*"
 rsa = "*"
 pyqt5 = "*"
 pyqt5-stubs = "*"
+pyperclip = "*"
 
 [requires]
 python_version = "3.8"

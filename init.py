@@ -1,4 +1,5 @@
 import os
+import shutil
 
 from config import STORE_DIR, MINING_BTCS
 from key import UserKey
@@ -8,6 +9,9 @@ from peer import NetworkRouting, FullBlockChain, Wallet, Miner
 
 def init():
     # 检查文件夹
+    if os.path.isdir(STORE_DIR):
+        shutil.rmtree(STORE_DIR)
+        os.mkdir(STORE_DIR)
     if not os.path.isdir(STORE_DIR):
         os.mkdir(STORE_DIR)
     # 打开N服务和B服务

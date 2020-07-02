@@ -1,7 +1,9 @@
 """钱包，必须有N以支持此功能"""
 import os
+import time
 from typing import Set, Optional, List, Dict
 from collections import defaultdict
+from threading import Thread
 
 from config import STORE_KEYS_FILE_PATH, DEFAULT_TRANS_FEE
 from key import UserKey
@@ -24,7 +26,7 @@ class Wallet:
         self.utxos: Dict[str, TransOutput] = {}             # 可使用的utxo集
         self.import_keys_from_file(STORE_KEYS_FILE_PATH)
         self.keys_file = open(STORE_KEYS_FILE_PATH, "w", encoding="utf-8")
-        self.sync_balance()
+        self.server_flag = False
 
     def __del__(self) -> None:
         self.write_keys_to_file()
@@ -81,8 +83,10 @@ class Wallet:
         """用blc更新钱包余额"""
         blc = FullBlockChain.get_instance()
         self.utxos = blc.get_utxo(*[user_key.get_address() for user_key in self.get_keys()])
+        tap: Dict[str, Btc] = defaultdict(Btc)
         for outp in self.utxos.values():
-            self.balance[outp.address] += outp.btcs
+            tap[outp.address] += outp.btcs
+        self.balance = tap
 
     def lookup_balance(self) -> Btc:
         """查看钱包余额"""
@@ -123,6 +127,7 @@ class Wallet:
         return t
     
     def broad_a_trans(self, trans: Transaction) -> None:
+        """广播一个交易"""
         msg = Message(recieve="M", type_="PUT", command="TRANS", data=str(trans))
         NetworkRouting.get_instance().broad_a_msg(msg)
 
@@ -131,3 +136,18 @@ class Wallet:
         user_key = UserKey()
         self.add_key(user_key)
         return user_key.get_address()
+
+    def start_server(self) -> None:
+        """打开服务"""
+        self.server_flag = True
+        def sync_t():
+            """同步余额"""
+            while self.server_flag:
+                self.sync_balance()
+                time.sleep(3)
+        thread = Thread(target=sync_t, name="Wallet sync-balance Thread", daemon=True)
+        thread.start()
+
+    def stop_server(self) -> None:
+        """停止服务"""
+        self.server_flag = False
