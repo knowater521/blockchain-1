@@ -21,6 +21,7 @@ class FullBlockChain:
     """完整的账本，类似代理，确保同步"""
     def __init__(self) -> None:
         self.sqlite_driver = BlockChainSqlite(STORE_BLC_FILE_PATH)
+        self.__import_blc_from_db()
         self.server_flag = True
 
     @classmethod
@@ -83,6 +84,11 @@ class FullBlockChain:
             Node("localhost", NETWORK_ROUTING_PORT).send_msg(to_msg)  # 广播区块
             return True
         return False
+
+    def add_first_block(self, block: Block) -> None:
+        """添加第一个块"""
+        self.__blc.add_block(block)
+        self.sqlite_driver.insert_block(block)
 
     def start_server(self) -> None:
         """启动B服务"""

@@ -8,7 +8,7 @@ from typing import Dict
 from config import STORE_KEYS_FILE_PATH
 from chain import Btc
 from key import UserKey
-from peer import Wallet, Miner
+from peer import Wallet, Miner, FullBlockChain
 from .win import Ui_MainWindow
 
 
@@ -27,6 +27,9 @@ class MainWindow(QMainWindow):
         self.ui.btn_mining.clicked.connect(self.__mining_action)
         self.ui.btn_add_output.clicked.connect(self.__add_output)
         self.ui.btn_broad_trans.clicked.connect(self.__broad_trans)
+        # 初始化面板
+        self.ui.label_balance.setText(str(Wallet.get_instance().lookup_balance()))
+        self.ui.label_block_height.setText(str(FullBlockChain.get_instance().get_height()))
 
     def __export_key(self) -> None:
         """导出秘钥"""

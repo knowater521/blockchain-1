@@ -24,6 +24,7 @@ class Wallet:
         self.utxos: Dict[str, TransOutput] = {}             # 可使用的utxo集
         self.import_keys_from_file(STORE_KEYS_FILE_PATH)
         self.keys_file = open(STORE_KEYS_FILE_PATH, "w", encoding="utf-8")
+        self.sync_balance()
 
     def __del__(self) -> None:
         self.write_keys_to_file()
@@ -77,7 +78,7 @@ class Wallet:
             self.user_keys.remove(str(key))
 
     def sync_balance(self) -> None:
-        """用blc更新钱包余额""" # TODO
+        """用blc更新钱包余额"""
         blc = FullBlockChain.get_instance()
         self.utxos = blc.get_utxo(*[user_key.get_address() for user_key in self.get_keys()])
         for outp in self.utxos.values():

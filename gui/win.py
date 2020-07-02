@@ -31,7 +31,7 @@ class Ui_MainWindow(object):
         self.label_2.setObjectName("label_2")
         self.label_balance = QtWidgets.QLabel(self.centralwidget)
         self.label_balance.setGeometry(QtCore.QRect(120, 150, 111, 61))
-        self.label_balance.setStyleSheet("font: 20pt \"Times New Roman\";")
+        self.label_balance.setStyleSheet("font: 10pt \"Times New Roman\";")
         self.label_balance.setAlignment(QtCore.Qt.AlignCenter)
         self.label_balance.setObjectName("label_balance")
         self.label_4 = QtWidgets.QLabel(self.centralwidget)
