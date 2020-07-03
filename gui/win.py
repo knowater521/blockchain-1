@@ -71,7 +71,7 @@ class Ui_MainWindow(object):
         self.box_pay_btcs = QtWidgets.QDoubleSpinBox(self.verticalLayoutWidget)
         self.box_pay_btcs.setDecimals(MIN_PRECISION_BTC)
         self.box_pay_btcs.setMinimum(Decimal("0.1")**MIN_PRECISION_BTC)
-        self.box_pay_btcs.setMaximum(200.0)
+        self.box_pay_btcs.setMaximum(1000.0)
         self.box_pay_btcs.setObjectName("box_pay_btcs")
         self.formLayout.setWidget(0, QtWidgets.QFormLayout.FieldRole, self.box_pay_btcs)
         self.label_7 = QtWidgets.QLabel(self.verticalLayoutWidget)

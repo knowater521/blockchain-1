@@ -129,9 +129,14 @@ class Wallet:
 
     def collect(self) -> str:
         """收钱（返回一个地址）"""
+        user_key = self.new_key()
+        return user_key.get_address()
+
+    def new_key(self) -> UserKey:
+        """新产生一个密钥"""
         user_key = UserKey()
         self.add_key(user_key)
-        return user_key.get_address()
+        return user_key
 
     def start_server(self) -> None:
         """打开服务"""
