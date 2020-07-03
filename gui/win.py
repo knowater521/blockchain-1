@@ -181,7 +181,7 @@ class Ui_MainWindow(object):
         self.trash = MyLabel(self.centralwidget)
         self.trash.setGeometry(QtCore.QRect(870, 430, 21, 41))
         self.trash.setText("")
-        self.trash.setPixmap(QtGui.QPixmap("gui/trash.jpg"))
+        self.trash.setPixmap(QtGui.QPixmap("files/img/trash.jpg"))
         self.trash.setScaledContents(True)
         self.trash.setObjectName("trash")
         self.label_4.raise_()

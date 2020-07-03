@@ -95,14 +95,15 @@ class FullBlockChain:
         self.server_flag = True
         def run():
             """接收区块，广播区块线程"""
-            node, msg = B_mailbox.get()
-            if msg.type == "PUT":   
-                if msg.command == "BLOCK":      # 添加新块，广播新块
-                    block = Block.load(msg.data)
-                    if self.add_new_block(block):
-                        NetworkRouting.get_instance().broad_a_msg(msg)
-            elif msg.type == "GET":
-                pass    # TODO
+            while self.server_flag:
+                node, msg = B_mailbox.get()
+                if msg.type == "PUT":   
+                    if msg.command == "BLOCK":      # 添加新块，广播新块
+                        block = Block.load(msg.data)
+                        if self.add_new_block(block):
+                            NetworkRouting.get_instance().broad_a_msg(msg)
+                elif msg.type == "GET":
+                    pass    # TODO
         thread = Thread(target=run, daemon=True, name="-B server thread-")
         thread.start()
 

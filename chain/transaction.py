@@ -61,7 +61,7 @@ class Transaction:
 
     def get_pub_keys(self) -> List[UserKey]:
         """获取交易中的全部公钥"""
-        return [UserKey(pub_hex=key) for key in self.pub_hex.split("-")]
+        return [UserKey(pub_hex=key) for key in self.pub_hex.split(_SPLIT_STR)]
     
     def get_signeds(self) -> List[str]:
         """获取交易中的全部签名"""

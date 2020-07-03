@@ -25,12 +25,7 @@ class Wallet:
         self.balance: Dict[str, Btc] = defaultdict(Btc)     # 已知的地址对应的余额（缓存）
         self.utxos: Dict[str, TransOutput] = {}             # 可使用的utxo集
         self.import_keys_from_file(STORE_KEYS_FILE_PATH)
-        self.keys_file = open(STORE_KEYS_FILE_PATH, "w", encoding="utf-8")
         self.server_flag = False
-
-    def __del__(self) -> None:
-        self.write_keys_to_file()
-        self.keys_file.close()
 
     @classmethod
     def get_instance(cls) -> "Wallet":
@@ -49,8 +44,9 @@ class Wallet:
 
     def write_keys_to_file(self) -> None:
         """把秘钥持久存储"""
-        for user_key in self.user_keys:
-            self.keys_file.write(user_key + "\n")
+        with open(STORE_KEYS_FILE_PATH, "w", encoding="utf-8") as f:
+            for user_key in self.user_keys:
+                f.write(user_key + "\n")
 
     def add_key(self, *keys: UserKey) -> None:
         """添加密钥"""

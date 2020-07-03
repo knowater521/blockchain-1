@@ -4,6 +4,7 @@ from typing import Set, List, Optional
 from threading import Thread, Condition, Lock
 from contextlib import contextmanager
 
+from extend import MyQueue
 from config import MAX_USER_TRANSACTION_NUMBER, MINING_ADD_NUM, NETWORK_ROUTING_PORT
 from chain import Btc, Block, Transaction, TransOutput
 from verify import Verify
@@ -18,16 +19,13 @@ class Miner:
     __instance = None
 
     def __init__(self) -> None:
-        self.trans_cache: Set[Transaction] = set()      # 交易池
+        self.trans_cache = MyQueue()        # 交易池
         self.trans_num = MAX_USER_TRANSACTION_NUMBER    # 一个区块打包多少个交易
         self.address = ""                               # 获取收益的地址
         self.server_flag = True
         self.mine_flag = True
-        self.use_cond = Condition()     # 占用等待队列
-        self.use_num = 1                # 占用信号量
-        self.consum_cond = Condition()  # 消费等待队列
-        self.consum_num = 0             # 消费需求的信号量
-        self.lock = Lock()
+        self.trans_later = Transaction()
+        self.block_later = Block()
 
     @classmethod
     def get_instance(cls) -> "Miner":
@@ -35,66 +33,23 @@ class Miner:
             cls.__instance = cls()
         return cls.__instance
 
-    @contextmanager
-    def __safe_occupy(self):
-        """安全使用（独占）"""
-        self.use_cond.acquire()
-        with self.lock:
-            self.use_num -= 1
-        if self.use_num < 0:
-            self.use_cond.wait()
-        yield
-        with self.lock:
-            self.use_num += 1
-        if self.use_num < 1:
-            self.use_cond.notify(1)
-        self.use_cond.release()
-
-    @contextmanager
-    def __safe_consum(self):
-        """安全使用（取出）"""
-        self.consum_cond.acquire()
-        with self.lock:
-            self.consum_num -= 1
-        if self.consum_num < 0:
-            self.consum_cond.wait()
-        yield
-        self.consum_cond.release()
-
     def set_wallet_address(self, address: str) -> None:
         """设置miner的收益地址"""
         self.address = address
 
     def add_trans(self, *transes: Transaction) -> bool:
         """往交易池中添加交易（先验证）""" 
-        with self.__safe_occupy():
-            result = False
-            for trans in transes:
-                if trans not in self.trans_cache and Verify.verify_new_transaction(trans):
-                    self.trans_cache.add(trans)
-                    with self.lock:
-                        self.consum_num += 1
-                    if self.consum_num < 1:     # 如果有因get而阻塞的线程，则唤醒
-                        self.consum_cond.acquire()
-                        self.consum_cond.notify(1)
-                        self.consum_cond.release()
-                    result = True
+        result = False
+        for trans in transes:
+            if not self.trans_cache.contain(trans) and Verify.verify_new_transaction(trans):
+                self.trans_cache.put(trans)
+                result = True
         return result
 
     def get_trans(self) -> Transaction:
         """从交易池中取一个交易（阻塞）"""
-        with self.__safe_consum():
-            with self.__safe_occupy():
-                tap = self.trans_cache.pop()
+        tap = self.trans_cache.get()
         return tap
-
-    def remove_trans(self, *transes: Transaction) -> None:
-        """从交易池中移除交易"""
-        with self.__safe_occupy():
-            for trans in transes:
-                if trans in self.trans_cache:
-                    self.trans_cache.remove(trans)
-                    self.consum_num -= 1
 
     def __get_mining_trans(self) -> List[Transaction]:
         """获取用于打包区块的交易"""
@@ -126,14 +81,14 @@ class Miner:
                 block.randnum += MINING_ADD_NUM
                 block.timestap = time.time()
             else:       # 中止挖矿（失败了）
-                self.add_trans(*trans_list)     # 把交易放回交易池
+                # self.add_trans(*trans_list)     # 把交易放回交易池
                 return None
+        self.block_later = block
         return block
 
     def accept_block(self, block: Block) -> None:
         """胜利者已经产生（新块已加入区块链）"""
         self.suspend_mining()
-        self.remove_trans(*block.get_user_transactions())
 
     def start_server(self) -> None:
         """打开服务"""
@@ -145,11 +100,12 @@ class Miner:
                 if msg.type == "PUT":
                     if msg.command == "TRANS":
                         trans = Transaction.load(msg.data)
-                        if self.add_trans(trans):
+                        if trans != self.trans_later and self.add_trans(trans):
+                            self.trans_later = trans
                             NetworkRouting.get_instance().broad_a_msg(msg)    # 广播交易
                     elif msg.command == "BLOCK":  # 其它进程先挖到，暂停挖矿
                         block = Block.load(msg.data)
-                        if Verify.verify_new_block(block) or FullBlockChain.get_instance().get_top_hash() == block.get_hash():
+                        if self.block_later != block and Verify.verify_new_block(block) and FullBlockChain.get_instance().get_top_hash() == block.get_hash():
                             self.accept_block(block)
         def mining_broad_block():
             """挖矿、广播新块的进程"""

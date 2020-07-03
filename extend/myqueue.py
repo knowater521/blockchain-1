@@ -1,7 +1,13 @@
 from queue import Queue
 
+
+__all__ = ["MyQueue", ]
+
+
 class MyQueue(Queue):
-    def __init__(self, maxsize=0):
+    """线程安全队列"""
+    def __init__(self, maxsize=0) -> None:
+        """设定队列最大item数量"""
         super().__init__(maxsize)
     
     def contain(self, item) -> bool:

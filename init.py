@@ -32,6 +32,7 @@ def init():
     block.set_head_transaction(head_trans)
     block.find_randnum()
     FullBlockChain.get_instance().add_first_block(block)
+    Wallet.get_instance().write_keys_to_file()
 
 if __name__ == "__main__":
     init()
