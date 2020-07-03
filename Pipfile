@@ -11,6 +11,7 @@ rsa = "*"
 pyqt5 = "*"
 pyqt5-stubs = "*"
 pyperclip = "*"
+pypiwin32 = "*"
 
 [requires]
 python_version = "3.8"

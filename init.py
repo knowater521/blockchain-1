@@ -1,19 +1,18 @@
 import os
 import shutil
 
-from config import STORE_DIR, MINING_BTCS
+from config import STORE_BLC_FILE_PATH, MINING_BTCS, STORE_KEYS_FILE_PATH
 from key import UserKey
 from chain import Btc, Transaction, TransOutput, Block
 from peer import NetworkRouting, FullBlockChain, Wallet, Miner
 
 
 def init():
-    # 检查文件夹
-    if os.path.isdir(STORE_DIR):
-        shutil.rmtree(STORE_DIR)
-        os.mkdir(STORE_DIR)
-    if not os.path.isdir(STORE_DIR):
-        os.mkdir(STORE_DIR)
+    # 删除旧文件
+    if os.path.isfile(STORE_BLC_FILE_PATH):
+        os.remove(STORE_BLC_FILE_PATH)
+    if os.path.isfile(STORE_KEYS_FILE_PATH):
+        os.remove(STORE_KEYS_FILE_PATH)
     # 打开N服务和B服务
     NetworkRouting.get_instance().start_server()
     FullBlockChain.get_instance().start_server()
