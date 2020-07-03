@@ -1,9 +1,7 @@
 import os
 import sys
-from PyQt5.QtWidgets import QApplication, QMainWindow
-from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import QApplication
 
-from config import STORE_DIR
 from peer import NetworkRouting, FullBlockChain, Wallet
 from gui import MainWindow
 

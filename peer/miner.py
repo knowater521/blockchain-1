@@ -1,14 +1,13 @@
 """矿工M，必须有B和N以支持此功能"""
 import time
-from typing import Set, List, Optional
-from threading import Thread, Condition, Lock
-from contextlib import contextmanager
+from typing import List, Optional
+from threading import Thread
 
 from extend import MyQueue
-from config import MAX_USER_TRANSACTION_NUMBER, MINING_ADD_NUM, NETWORK_ROUTING_PORT
+from config import MAX_USER_TRANSACTION_NUMBER, MINING_ADD_NUM
 from chain import Btc, Block, Transaction, TransOutput
 from verify import Verify
-from .network_routing import NetworkRouting, M_mailbox, Message, Node
+from .network_routing import NetworkRouting, M_mailbox, Message
 from .fullblockchain import FullBlockChain
 
 

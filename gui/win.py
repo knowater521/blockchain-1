@@ -16,6 +16,9 @@ from .trashlabel import MyLabel
 from .listwidget import MyQListWidget
 
 
+__all__ = ["Ui_MainWindow", ]
+
+
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")

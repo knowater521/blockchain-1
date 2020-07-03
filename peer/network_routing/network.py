@@ -1,6 +1,6 @@
 """网络路由N"""
 import json
-from typing import Set, Dict, Tuple, Any, List
+from typing import Set, List
 from threading import Thread
 
 from config import NETWORK_ROUTING_PORT

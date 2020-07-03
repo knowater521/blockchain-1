@@ -4,6 +4,9 @@ from PyQt5.QtGui import QDragEnterEvent, QDropEvent
 from PyQt5.QtCore import Qt
 
 
+__all__ = ["MyLabel", ]
+
+
 class MyLabel(QLabel):
     """可接收拖拽的Label"""
     def __init__(self, parent: Optional[QWidget]=None) -> None:

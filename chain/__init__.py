@@ -11,7 +11,6 @@ from .blockchain import BlockChain
 __all__ = ["Btc", "TransInput", "TransOutput", "Transaction", "Block", "BlockChain", ]
 
 
-
 """
 # BlockChain 类
 [

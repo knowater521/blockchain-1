@@ -3,7 +3,6 @@ import sqlite3
 from typing import Dict, List
 from collections import defaultdict
 from contextlib import contextmanager
-from queue import Queue
 from threading import Thread
 
 from config import NETWORK_ROUTING_PORT, STORE_BLC_FILE_PATH

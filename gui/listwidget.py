@@ -4,6 +4,9 @@ from PyQt5.QtGui import QDragEnterEvent, QDropEvent, QDragMoveEvent, QKeyEvent
 from PyQt5.QtCore import Qt, QModelIndex
 
 
+__all__ = ["MyQListWidget", ]
+
+
 class MyQListWidget(QListWidget):
     """支持拖拽的QListWidget"""
     def __init__(self, parent: Optional[QWidget]=None) -> None:

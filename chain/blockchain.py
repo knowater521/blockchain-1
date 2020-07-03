@@ -1,7 +1,7 @@
 """区块链的数据结构"""
 import time
 from hashlib import sha256
-from typing import Tuple, List, Set, Dict
+from typing import List, Set, Dict
 
 from .btc import Btc
 from .trans_output import TransOutput

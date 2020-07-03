@@ -1,5 +1,4 @@
 """N服务"""
-from typing import Tuple
 from queue import Queue
 from socket import socket, AF_INET, SOCK_STREAM
 from threading import Thread

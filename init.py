@@ -1,5 +1,4 @@
 import os
-import shutil
 
 from config import STORE_BLC_FILE_PATH, MINING_BTCS, STORE_KEYS_FILE_PATH
 from key import UserKey
