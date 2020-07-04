@@ -9,6 +9,10 @@ with open("./files/config/config.json", "r", encoding="utf-8") as f:
 # 非程序文件的存放位置
 STORE_DIR = config.get("STORE_DIR", "./files/")
 
+# 程序GUI设定
+WINDOW_TITLE = "BT币"
+WINDOW_ICON = STORE_DIR + "img/main.ico"
+
 # 秘钥的配置文件
 STORE_KEYS_FILE_PATH = STORE_DIR + "user.keys"   # 持久化存储秘钥文件位置
 

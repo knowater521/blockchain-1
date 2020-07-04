@@ -3,11 +3,17 @@
 配置说明
 
 ```python
+# 文件位置的配置
+STORE_DIR = "./files/"								# 非程序文件的存放位置，结尾必须带 / 
+STORE_KEYS_FILE_PATH = STORE_DIR + "user.keys"		# 持久化存储秘钥文件位置
+STORE_BLC_FILE_PATH = STORE_DIR + "blockchain.db"	# 持久化区块链数据库文件位置
+
 # 底层区块链结构的配置
 FIREST_BLOCK_PREHASH = "0" * 64         # 第一个区块的pre_hash的值，r"[0-9a-f]{64}"
 MAX_USER_TRANSACTION_NUMBER = 10        # 一个区块的用户交易最大数量，不包括创币交易
 MIN_USER_TRANSACTION_NUMBER = 1         # 一个区块的用户交易最小数量
 MIN_PRECISION_BTC = 8                   # btc的最小精度（小数点后8位）
+DEFAULT_TRANS_FEE = "2"					# 默认交易费
 
 # 挖矿规则的配置
 HEAD_HASH = "000"                       # 挖矿难度，r"[0-9a-f]{1,64}"，越长越难

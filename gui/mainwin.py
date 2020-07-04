@@ -3,38 +3,30 @@ import json
 import pyperclip
 from PyQt5.QtWidgets import QMainWindow, QFileDialog
 from PyQt5.QtCore import Qt
-from PyQt5.Qt import QObject
+from PyQt5.QtGui import QIcon
 from collections import defaultdict
 from typing import Dict, List
 
-from config import STORE_KEYS_FILE_PATH
+from config import STORE_KEYS_FILE_PATH, WINDOW_ICON, WINDOW_TITLE
 from chain import Btc
 from key import UserKey
 from peer import Wallet, Miner, FullBlockChain, NetworkRouting
 from .win import Ui_MainWindow
+from .timingevent import TimingEvent
 
 
 __all__ = ["MainWindow", ]
 
 
-class TimingEvent(QObject):
-    def __init__(self, caller) -> None:
-        super().__init__()
-        self.caller = caller
-
-    def set_caller(self, caller) -> None:
-        self.caller = caller
-
-    def timerEvent(self, _) -> None:
-        self.caller()
-
-
 class MainWindow(QMainWindow):
+    """主窗口配置"""
     def __init__(self) -> None:
         super().__init__()
         self.pay_dict: Dict[str, Btc] = defaultdict(Btc)
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
+        self.setWindowTitle(WINDOW_TITLE)
+        self.setWindowIcon(QIcon(WINDOW_ICON))
         # 禁止改变窗口大小
         self.setWindowFlag(Qt.WindowMinMaxButtonsHint)
         self.setFixedSize(self.width(), self.height())
@@ -49,6 +41,7 @@ class MainWindow(QMainWindow):
         # 初始化面板
         node_list = NetworkRouting.get_instance().get_nodes()
         self.ui.node_list.addItems(node_list)
+        # 定时事件
         self.nodelist_change = TimingEvent(lambda : NetworkRouting.get_instance().set_nodes(self.__get_node_list()))
         self.nodelist_change.startTimer(2000)
         self.balance_change = TimingEvent(lambda : self.ui.label_balance.setText(str(Wallet.get_instance().lookup_balance())))

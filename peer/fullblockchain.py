@@ -57,10 +57,6 @@ class FullBlockChain:
         """计算一笔交易的交易费"""
         return self.__blc.compute_transaction_fee(trans)
 
-    def get_utxo(self, *address) -> Dict[str, TransOutput]:
-        """查找一个或多个地址的utxo"""
-        return self.__blc.get_utxo(*address)
-
     def get_hash(self) -> str:
         """获取本账本的hash值"""
         return self.__blc.get_hash()
@@ -105,6 +101,9 @@ class FullBlockChain:
                     pass    # TODO
         thread = Thread(target=run, daemon=True, name="-B server thread-")
         thread.start()
+    
+    def stop_server(self) -> None:
+        self.server_flag = False
 
 
 class BlockChainSqlite:

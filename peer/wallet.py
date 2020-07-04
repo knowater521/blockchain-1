@@ -78,7 +78,7 @@ class Wallet:
     def sync_balance(self) -> None:
         """用blc更新钱包余额"""
         blc = FullBlockChain.get_instance()
-        self.utxos = blc.get_utxo(*[user_key.get_address() for user_key in self.get_keys()])
+        self.utxos = blc.lookup_utxo(*[user_key.get_address() for user_key in self.get_keys()])
         tap: Dict[str, Btc] = defaultdict(Btc)
         for outp in self.utxos.values():
             tap[outp.address] += outp.btcs
