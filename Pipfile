@@ -12,6 +12,8 @@ pyqt5 = "*"
 pyqt5-stubs = "*"
 pyperclip = "*"
 pypiwin32 = "*"
+setuptools = "==44.0.0"
+pyinstaller = "*"
 
 [requires]
 python_version = "3.8"
